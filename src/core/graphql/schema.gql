@@ -1,0 +1,820 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input AddToCartInput {
+  productId: String!
+  quantity: Int = 1
+}
+
+type AnalyticsSummaryModel {
+  avgOrderValue: Float!
+  conversionRate: Float!
+  newCustomers: Int!
+  revenueByDay: [RevenueByPeriodModel!]!
+  topProducts: [TopProductModel!]!
+  totalOrders: Int!
+  totalRevenue: Float!
+}
+
+type ArticleCommentModel {
+  body: String!
+  createdAt: DateTime!
+  id: ID!
+  postId: String!
+  updatedAt: DateTime!
+  userId: String!
+}
+
+type AuthModel {
+  message: String
+  user: UserModel
+}
+
+type BranchModel {
+  address: String!
+  city: String!
+  createdAt: DateTime!
+  id: ID!
+  isActive: Boolean!
+  latitude: Float
+  longitude: Float
+  name: String!
+  phone: String!
+  updatedAt: DateTime!
+  workingHours: String
+}
+
+type CartItemModel {
+  cartId: String!
+  createdAt: DateTime!
+  id: ID!
+  isSelected: Boolean!
+  product: CartProductModel
+  productId: String!
+  quantity: Int!
+  subtotal: Float!
+  updatedAt: DateTime!
+}
+
+type CartModel {
+  createdAt: DateTime!
+  id: ID!
+  items: [CartItemModel!]!
+  selectedCount: Int!
+  selectedTotal: Float!
+  total: Float!
+  totalItems: Int!
+  updatedAt: DateTime!
+  userId: String!
+}
+
+type CartProductModel {
+  id: ID!
+  images: [String!]!
+  name: String
+  price: Float
+}
+
+type CategoryModel {
+  children: [CategoryModel!]
+  createdAt: DateTime!
+  id: ID!
+  imageUrl: String
+  name: String!
+  parentId: String
+  slug: String!
+  updatedAt: DateTime!
+}
+
+input ChangeEmailInput {
+  email: String!
+}
+
+input ChangeNotificationsSettingsInput {
+  pushNotifications: Boolean
+  siteNotifications: Boolean
+}
+
+input ChangePasswordInput {
+  newPassword: String!
+  oldPassword: String
+}
+
+input CreateAddressInput {
+  apartment: String
+  building: String!
+  city: String!
+  fullName: String!
+  isDefault: Boolean = false
+  phone: String!
+  postalCode: String
+  street: String!
+}
+
+input CreateBranchInput {
+  address: String!
+  city: String!
+  latitude: Float
+  longitude: Float
+  name: String!
+  phone: String!
+  workingHours: String
+}
+
+input CreateCategoryInput {
+  imageUrl: String
+  name: String!
+  parentId: String
+  slug: String
+}
+
+input CreateCommentInput {
+  body: String!
+}
+
+input CreateOrderInput {
+  note: String
+  paymentMethod: PaymentMethod!
+  shipping: ShippingAddressInput!
+}
+
+input CreatePostInput {
+  body: String!
+  coverImage: String
+  excerpt: String
+  isPublished: Boolean
+  slug: String!
+  tags: [String!]
+  title: String!
+}
+
+input CreateProductInput {
+  attributes: JSON
+  categoryId: String!
+  description: String
+  discountPercent: Int = 0
+  draftId: String!
+  images: [String!]
+  isPublished: Boolean = false
+  name: String!
+  price: Float!
+  stock: Int = 0
+}
+
+input CreateReviewInput {
+  productId: String!
+  rating: Int!
+  text: String
+  title: String
+}
+
+input CreateUserInput {
+  email: String!
+  password: String!
+  username: String!
+}
+
+input CreateVariantInput {
+  attributes: String
+  name: String!
+  price: Float
+  sku: String!
+  stock: Float! = 0
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input DeactivateAccountInput {
+  email: String!
+  password: String!
+  pin: String
+}
+
+enum DeliveryType {
+  COURIER
+  PICKUP
+}
+
+type DeviceModel {
+  browser: String!
+  os: String!
+  type: String!
+}
+
+type DevicesModel {
+  createdAt: DateTime!
+  deviceName: String!
+  deviceType: String!
+  id: ID!
+  lastUsedAt: DateTime!
+  token: String!
+  userId: String!
+}
+
+input EnableTotpInput {
+  pin: String!
+  secret: String!
+}
+
+input FilterOrderInput {
+  limit: Int = 20
+  page: Int = 1
+  status: OrderStatus
+}
+
+input FilterPostInput {
+  limit: Int
+  page: Int
+  search: String
+  tag: String
+}
+
+input FilterProductInput {
+  categoryId: String
+  inStock: Boolean
+  limit: Int = 20
+  maxPrice: Float
+  minPrice: Float
+  page: Int = 1
+  search: String
+  sortBy: String = "createdAt"
+  sortOrder: String = "desc"
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type LocationModel {
+  city: String!
+  country: String!
+  latitude: Float!
+  longtitude: Float!
+}
+
+input LoginInput {
+  login: String!
+  password: String!
+  pin: String
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+type Mutation {
+  addPostComment(data: CreateCommentInput!, postId: String!): ArticleCommentModel!
+  addToCart(data: AddToCartInput!): CartModel!
+  adminCreateBranch(data: CreateBranchInput!): BranchModel!
+  adminDeleteBranch(id: String!): Boolean!
+  adminDeletePostComment(commentId: String!): Boolean!
+  adminRefundOrder(orderId: String!): Boolean!
+  adminUpdateBranch(data: UpdateBranchInput!, id: String!): BranchModel!
+  adminUpdateOrderStatus(data: UpdateOrderStatusInput!, orderId: String!): OrderModel!
+  assignRole(role: Role!, userId: String!): UserModel!
+  cancelOrder(orderId: String!): Boolean!
+  changeEmail(data: ChangeEmailInput!): Boolean!
+  changeNotificationSettings(data: ChangeNotificationsSettingsInput!): changeNotificationSettingsModel!
+  changePassword(data: ChangePasswordInput!): Boolean!
+  checkPaymentStatus(orderId: String!): Boolean!
+  clearCart: Boolean!
+  clearSessionCookie: Boolean!
+  createAddress(data: CreateAddressInput!): UserAddressModel!
+  createCategory(data: CreateCategoryInput!): CategoryModel!
+  createDraftProduct: ProductModel!
+  createOrder(data: CreateOrderInput!): OrderModel!
+  createPost(data: CreatePostInput!): PostModel!
+  createProduct(data: CreateProductInput!): ProductModel!
+  createReview(data: CreateReviewInput!): ReviewModel!
+  createUser(data: CreateUserInput!): UserModel!
+  createVariant(data: CreateVariantInput!, productId: String!): ProductVariantModel!
+  deactivateAccount(data: DeactivateAccountInput!): AuthModel!
+  deleteAddress(id: String!): Boolean!
+  deletePost(id: String!): Boolean!
+  deletePostComment(commentId: String!): Boolean!
+  deleteReview(reviewId: String!): Boolean!
+  deleteVariant(variantId: String!): Boolean!
+  deselectAllCartItems: CartModel!
+  disableTotp: Boolean!
+  enableTotp(data: EnableTotpInput!): Boolean!
+  initPayment(orderId: String!): PaymentInitModel!
+  loginUser(data: LoginInput!): AuthModel!
+  logoutUser: Boolean!
+  markAllNotificationAsRead: Boolean!
+  markNotificationAsRead(ids: [String!]!): Boolean!
+  newEmail(data: NewEmailInput!): Boolean!
+  newPassword(data: NewPasswordInput!): Boolean!
+  registerDeviceToken(data: RegisterDeviceTokenInput!): Boolean!
+  removeCategory(id: String!): Boolean!
+  removeDeviceToken(token: String!): Boolean!
+  removeFromCart(productId: String!): CartModel!
+  removeProduct(id: String!): Boolean!
+  removeSelectedFromCart: CartModel!
+  removeSession(id: String!): Boolean!
+  resendVerificationEmail: Boolean!
+  resetPassword(data: ResetPasswordInput!): Boolean!
+  selectAllCartItems: CartModel!
+  setDefaultAddress(id: String!): UserAddressModel!
+  toggleCartItemSelection(productId: String!): CartModel!
+  toggleProductPublish(id: String!): ProductModel!
+  updateAddress(data: UpdateAddressInput!, id: String!): UserAddressModel!
+  updateCartItem(data: UpdateCartItemInput!): CartModel!
+  updateCategory(data: UpdateCategoryInput!, id: String!): CategoryModel!
+  updatePost(data: UpdatePostInput!, id: String!): PostModel!
+  updateProduct(data: UpdateProductInput!, id: String!): ProductModel!
+  updateReview(data: UpdateReviewInput!, reviewId: String!): ReviewModel!
+  updateVariant(data: UpdateVariantInput!, variantId: String!): ProductVariantModel!
+  verifyAccount(data: VerificationInput!): UserModel!
+}
+
+input NewEmailInput {
+  token: String!
+}
+
+input NewPasswordInput {
+  password: String!
+  passwordRepeat: String!
+  token: String!
+}
+
+type NotificationMetaModel {
+  limit: Float!
+  page: Float!
+  total: Float!
+  totalPages: Float!
+}
+
+type NotificationModel {
+  actorId: String
+  albumId: String
+  commentId: String
+  createdAt: DateTime!
+  id: ID!
+  isRead: Boolean!
+  message: String!
+  projectId: String
+  type: NotificationsType!
+  updatedAt: DateTime!
+  user: UserModel!
+  userId: String!
+}
+
+type NotificationSettingsModel {
+  createdAt: DateTime!
+  id: ID!
+  pushNotifications: Boolean!
+  siteNotifications: Boolean!
+  updatedAt: DateTime!
+  user: UserModel!
+  userId: String!
+}
+
+enum NotificationsType {
+  DISABLE_TWO_FACTOR
+  ENABLE_TWO_FACTOR
+  NEW_POST
+  ORDER_CANCELLED
+  ORDER_CONFIRMED
+  ORDER_DELIVERED
+  ORDER_PAID
+  ORDER_PLACED
+  ORDER_REFUNDED
+  ORDER_SHIPPED
+  ORDER_STATUS_CHANGED
+  POST_COMMENT
+}
+
+type OrderItemModel {
+  id: ID!
+  priceAtOrder: Float!
+  product: OrderProductModel
+  productId: String!
+  quantity: Int!
+  subtotal: Float!
+  variantId: String
+  variantName: String
+}
+
+type OrderListModel {
+  data: [OrderModel!]!
+  limit: Int!
+  page: Int!
+  total: Int!
+}
+
+type OrderModel {
+  createdAt: DateTime!
+  discountAmount: Float
+  id: ID!
+  items: [OrderItemModel!]!
+  note: String
+  payment: PaymentModel
+  shipping: ShippingAddressModel
+  status: OrderStatus!
+  totalAmount: Float!
+  updatedAt: DateTime!
+  userId: String!
+}
+
+type OrderProductModel {
+  id: ID!
+  images: [String!]!
+  name: String
+}
+
+enum OrderStatus {
+  CANCELLED
+  DELIVERED
+  PAID
+  PENDING
+  PROCESSING
+  REFUNDED
+  SHIPPED
+}
+
+type OutputNotificationModel {
+  data: [NotificationModel!]!
+  meta: NotificationMetaModel!
+}
+
+input PageLimitInput {
+  limit: Int = 20
+  page: Int = 1
+}
+
+type PaymentInitModel {
+  expiresAt: DateTime
+  formUrl: String
+  invoiceId: String
+  orderId: String!
+  paymentUrl: String
+  qrToken: String
+  qrUrl: String
+  type: String!
+}
+
+enum PaymentMethod {
+  CASH_ON_DELIVERY
+  HALYK_EKVAYRING
+  KASPI_PAY
+}
+
+type PaymentModel {
+  amount: Float!
+  createdAt: DateTime!
+  currency: String!
+  expiresAt: DateTime
+  halykApprovalCode: String
+  halykInvoiceId: String
+  halykOrderId: String
+  halykRrn: String
+  id: ID!
+  kaspiOrderId: String
+  kaspiQrToken: String
+  method: PaymentMethod!
+  paidAt: DateTime
+  status: PaymentsStatus!
+  updatedAt: DateTime!
+}
+
+enum PaymentsStatus {
+  EXPIRED
+  FAILED
+  PENDING
+  PROCESSING
+  REFUNDED
+  SUCCEEDED
+}
+
+type PostListModel {
+  data: [PostModel!]!
+  page: Int!
+  total: Int!
+  totalPages: Int!
+}
+
+type PostModel {
+  body: String!
+  comments: [ArticleCommentModel!]
+  coverImage: String
+  createdAt: DateTime!
+  excerpt: String
+  id: ID!
+  isPublished: Boolean!
+  publishedAt: DateTime
+  slug: String!
+  tags: [String!]!
+  title: String!
+  updatedAt: DateTime!
+}
+
+type ProductCategoryModel {
+  id: ID!
+  name: String!
+  slug: String!
+}
+
+type ProductListModel {
+  data: [ProductModel!]!
+  meta: ProductMetaModel!
+}
+
+type ProductMediaModel {
+  id: ID!
+  mediaType: MediaType!
+  url: String!
+}
+
+type ProductMetaModel {
+  limit: Int!
+  page: Int!
+  total: Int!
+  totalPages: Int!
+}
+
+type ProductModel {
+  attributes: JSON
+  category: ProductCategoryModel
+  categoryId: String
+  createdAt: DateTime!
+  description: String
+
+  """Скидка в процентах (0–100)"""
+  discountPercent: Int
+
+  """Цена после скидки"""
+  discountedPrice: Float
+  id: ID!
+  images: [String!]!
+  isDraft: Boolean!
+  isPublished: Boolean!
+  medias: [ProductMediaModel!]
+  name: String
+  price: Float
+  stock: Int!
+  updatedAt: DateTime!
+}
+
+type ProductVariantModel {
+  attributes: String
+  createdAt: DateTime!
+  id: ID!
+  isActive: Boolean!
+  name: String!
+  price: Float
+  productId: String!
+  sku: String!
+  stock: Float!
+  updatedAt: DateTime!
+}
+
+type Query {
+  adminGetAllOrders(filter: FilterOrderInput): OrderListModel!
+  adminGetBranches: [BranchModel!]!
+  adminGetOrder(orderId: String!): OrderModel!
+  adminGetPost(slug: String!): PostModel!
+  adminGetPosts(filter: FilterPostInput): PostListModel!
+  findAllCategories: [CategoryModel!]!
+  findAllProducts(filter: FilterProductInput): ProductListModel!
+  findAllProductsAdmin(filter: FilterProductInput): ProductListModel!
+  findAllUser: [UserModel!]!
+  findCategoryById(id: String!): CategoryModel!
+  findCategoryBySlug(slug: String!): CategoryModel!
+  findCurrentSession: SessionModel!
+  findNotificationsByUser(data: PageLimitInput!): OutputNotificationModel!
+  findNotificationsUnreadCount: Float!
+  findProductById(id: String!): ProductModel!
+  findProfile: UserModel!
+  findSessionByUser: [SessionModel!]!
+  generateTotpSecret: TotpModel!
+  getAnalyticsSummary(from: String!, to: String!): AnalyticsSummaryModel!
+  getBranch(id: String!): BranchModel!
+  getBranches: [BranchModel!]!
+  getCart: CartModel!
+  getDevices: [DevicesModel!]!
+  getMyAddresses: [UserAddressModel!]!
+  getMyOrder(orderId: String!): OrderModel!
+  getMyOrders(filter: FilterOrderInput): OrderListModel!
+  getPost(slug: String!): PostModel!
+  getPosts(filter: FilterPostInput): PostListModel!
+  getProductReviews(productId: String!): ReviewListModel!
+  getProductVariants(productId: String!): [ProductVariantModel!]!
+}
+
+input RegisterDeviceTokenInput {
+  deviceName: String
+  deviceType: String!
+  token: String!
+}
+
+input ResetPasswordInput {
+  email: String!
+}
+
+type RevenueByPeriodModel {
+  date: String!
+  ordersCount: Int!
+  revenue: Float!
+}
+
+type ReviewListModel {
+  avgRating: Float!
+  data: [ReviewModel!]!
+  total: Int!
+}
+
+type ReviewModel {
+  createdAt: DateTime!
+  id: ID!
+  isVerified: Boolean!
+  productId: String!
+  rating: Int!
+  text: String
+  title: String
+  updatedAt: DateTime!
+  userId: String!
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  USER
+}
+
+type SessionMetadataModel {
+  device: DeviceModel!
+  ip: String!
+  location: LocationModel!
+}
+
+type SessionModel {
+  createdAt: String!
+  id: ID!
+  isCurrent: Boolean!
+  metadata: SessionMetadataModel
+  userId: String!
+}
+
+input ShippingAddressInput {
+  apartment: String
+  branchId: String
+  building: String
+  city: String
+  deliveryType: DeliveryType = COURIER
+  fullName: String!
+  phone: String!
+  postalCode: String
+  street: String
+}
+
+type ShippingAddressModel {
+  apartment: String
+  branchId: String
+  building: String
+  city: String
+  deliveryType: DeliveryType!
+  fullName: String!
+  id: ID!
+  phone: String!
+  postalCode: String
+  street: String
+}
+
+type TopProductModel {
+  productId: String!
+  productName: String
+  totalRevenue: Float!
+  totalSold: Int!
+}
+
+type TotpModel {
+  qrcodeUrl: String!
+  secret: String!
+}
+
+input UpdateAddressInput {
+  apartment: String
+  building: String
+  city: String
+  fullName: String
+  isDefault: Boolean
+  phone: String
+  postalCode: String
+  street: String
+}
+
+input UpdateBranchInput {
+  address: String
+  city: String
+  isActive: Boolean
+  latitude: Float
+  longitude: Float
+  name: String
+  phone: String
+  workingHours: String
+}
+
+input UpdateCartItemInput {
+  productId: String!
+  quantity: Int!
+}
+
+input UpdateCategoryInput {
+  imageUrl: String
+  name: String
+  parentId: String
+  slug: String
+}
+
+input UpdateOrderStatusInput {
+  status: OrderStatus!
+}
+
+input UpdatePostInput {
+  body: String
+  coverImage: String
+  excerpt: String
+  isPublished: Boolean
+  slug: String
+  tags: [String!]
+  title: String
+}
+
+input UpdateProductInput {
+  attributes: JSON
+  categoryId: String
+  description: String
+  discountPercent: Int
+  images: [String!]
+  isPublished: Boolean
+  name: String
+  price: Float
+  stock: Int
+}
+
+input UpdateReviewInput {
+  rating: Int
+  text: String
+  title: String
+}
+
+input UpdateVariantInput {
+  attributes: String
+  isActive: Boolean
+  name: String
+  price: Float
+  sku: String
+  stock: Float
+}
+
+type UserAddressModel {
+  apartment: String
+  building: String!
+  city: String!
+  createdAt: DateTime!
+  fullName: String!
+  id: ID!
+  isDefault: Boolean!
+  phone: String!
+  postalCode: String
+  street: String!
+  updatedAt: DateTime!
+  userId: String!
+}
+
+type UserModel {
+  avatar: String
+  bio: String
+  createdAt: DateTime!
+  deactivatedAt: DateTime
+  email: String!
+  id: ID!
+  isDeactivated: Boolean!
+  isEmailVerified: Boolean!
+  isTotpEnabled: Boolean!
+  isVerified: Boolean!
+  notificaitons: [NotificationModel!]!
+  notifications: [String!]!
+  notificationsSettings: NotificationSettingsModel!
+  password: String!
+  pendingNewEmail: String!
+  phoneNumber: String!
+  role: Role!
+  totpSecret: String
+  updatedAt: DateTime!
+  username: String!
+}
+
+input VerificationInput {
+  token: String!
+}
+
+type changeNotificationSettingsModel {
+  notificationSettings: NotificationSettingsModel!
+}
