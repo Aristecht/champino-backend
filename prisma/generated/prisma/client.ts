@@ -144,3 +144,13 @@ export type NotificationsSettings = Prisma.NotificationsSettingsModel
  * 
  */
 export type Token = Prisma.TokenModel
+/**
+ * Model LoyaltyCard
+ * 
+ */
+export type LoyaltyCard = Prisma.LoyaltyCardModel
+/**
+ * Model LoyaltyAccrualOperation
+ * 
+ */
+export type LoyaltyAccrualOperation = Prisma.LoyaltyAccrualOperationModel

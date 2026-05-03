@@ -3,8 +3,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { extname } from 'path';
+import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../../core/prisma/prisma.service';
 import { NotificationsService } from '../../notifications/notifications.service';
+import { StorageService } from '../../libs/storage/storage.service';
 import {
   CreateCommentInput,
   CreatePostInput,
@@ -14,10 +17,114 @@ import {
 
 @Injectable()
 export class NewsService {
+  private static readonly ALLOWED_IMAGE_EXTS = [
+    'jpg',
+    'jpeg',
+    'png',
+    'webp',
+    'gif',
+  ];
+  private static readonly MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+
   constructor(
     private readonly prismaService: PrismaService,
     private readonly notificationsService: NotificationsService,
+    private readonly storageService: StorageService,
   ) {}
+
+  private validateCoverImage(file: Express.Multer.File) {
+    const ext = extname(file.originalname).replace('.', '').toLowerCase();
+
+    if (!NewsService.ALLOWED_IMAGE_EXTS.includes(ext)) {
+      throw new BadRequestException(
+        `Недопустимый формат: ${ext}. Разрешены: ${NewsService.ALLOWED_IMAGE_EXTS.join(', ')}`,
+      );
+    }
+
+    if (file.size > NewsService.MAX_IMAGE_SIZE) {
+      throw new BadRequestException(
+        `Размер файла превышает ${NewsService.MAX_IMAGE_SIZE / 1024 / 1024} МБ`,
+      );
+    }
+
+    return ext;
+  }
+
+  private async removeCoverIfExists(url?: string | null) {
+    if (!url) {
+      return;
+    }
+
+    const key = url.split(`/${process.env.S3_BUCKET_NAME}/`)[1];
+    if (key) {
+      await this.storageService.remove(key);
+    }
+  }
+
+  async createWithImage(input: CreatePostInput, file?: Express.Multer.File) {
+    let coverImage = input.coverImage;
+
+    if (file) {
+      const ext = this.validateCoverImage(file);
+      const key = `news/${uuidv4()}.${ext}`;
+      await this.storageService.upload(file.buffer, key, file.mimetype);
+      coverImage = this.storageService.getFileUrl(key);
+    }
+
+    return this.create({
+      ...input,
+      coverImage,
+    });
+  }
+
+  async updateWithImage(
+    id: string,
+    input: UpdatePostInput,
+    file?: Express.Multer.File,
+  ) {
+    if (!file) {
+      return this.update(id, input);
+    }
+
+    const post = await this.prismaService.post.findUnique({ where: { id } });
+    if (!post) {
+      throw new NotFoundException('Новость не найдена');
+    }
+
+    const ext = this.validateCoverImage(file);
+    const key = `news/${uuidv4()}.${ext}`;
+    await this.storageService.upload(file.buffer, key, file.mimetype);
+    const newCoverUrl = this.storageService.getFileUrl(key);
+
+    const updated = await this.update(id, {
+      ...input,
+      coverImage: newCoverUrl,
+    });
+
+    if (post.coverImage && post.coverImage !== newCoverUrl) {
+      this.removeCoverIfExists(post.coverImage).catch(() => {});
+    }
+
+    return updated;
+  }
+
+  async removeCoverImage(id: string) {
+    const post = await this.prismaService.post.findUnique({ where: { id } });
+    if (!post) {
+      throw new NotFoundException('Новость не найдена');
+    }
+
+    if (!post.coverImage) {
+      throw new BadRequestException('У новости нет обложки');
+    }
+
+    await this.removeCoverIfExists(post.coverImage);
+
+    return this.prismaService.post.update({
+      where: { id },
+      data: { coverImage: null },
+    });
+  }
 
   async findAll(filter: FilterPostInput, onlyPublished = true) {
     const { search, tag, page = 1, limit = 20 } = filter;
@@ -139,6 +246,9 @@ export class NewsService {
   async remove(id: string) {
     const post = await this.prismaService.post.findUnique({ where: { id } });
     if (!post) throw new NotFoundException('Новость не найдена');
+
+    await this.removeCoverIfExists(post.coverImage);
+
     await this.prismaService.post.delete({ where: { id } });
     return true;
   }

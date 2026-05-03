@@ -25,7 +25,7 @@ export class SessionResolver {
     return await this.sessionService.findCurrent(req);
   }
 
-  @Throttle({ auth: { limit: 75, ttl: 1 * 60 * 1000 } })
+  @Throttle({ auth: { limit: 200, ttl: 1 * 60 * 1000 } })
   @UseGuards(GqlThrottlerGuard)
   @Mutation(() => AuthModel, { name: 'loginUser' })
   async login(

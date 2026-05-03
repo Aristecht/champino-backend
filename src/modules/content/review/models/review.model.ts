@@ -38,6 +38,12 @@ export class ReviewListModel {
   @Field(() => Int)
   total: number;
 
+  @Field(() => Int)
+  page: number;
+
+  @Field(() => Int)
+  limit: number;
+
   @Field(() => Float)
   avgRating: number;
 }

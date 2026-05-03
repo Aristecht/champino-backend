@@ -7,12 +7,7 @@ export class AnalyticsService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getSummary(from: Date, to: Date) {
-    const completedStatuses = [
-      OrderStatus.PAID,
-      OrderStatus.PROCESSING,
-      OrderStatus.SHIPPED,
-      OrderStatus.DELIVERED,
-    ];
+    const completedStatuses = [OrderStatus.DELIVERED, OrderStatus.COMPLETED];
 
     const ordersAgg = await this.prismaService.order.aggregate({
       where: {

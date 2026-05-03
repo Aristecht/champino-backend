@@ -42,10 +42,6 @@ export class CreateProductInput {
   @Min(0)
   stock?: number;
 
-  @Field(() => [String], { nullable: true })
-  @IsOptional()
-  images?: string[];
-
   @Field(() => String)
   @IsUUID()
   @IsNotEmpty()
@@ -55,7 +51,7 @@ export class CreateProductInput {
   @IsOptional()
   attributes?: Record<string, unknown>;
 
-  @Field(() => Boolean, { nullable: true, defaultValue: false })
+  @Field(() => Boolean, { nullable: true, defaultValue: true })
   @IsOptional()
   @IsBoolean()
   isPublished?: boolean;

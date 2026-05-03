@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import {
   NotificationsType,
+  Role,
   type User,
 } from '../../../prisma/generated/prisma/client';
 import { ChangeNotificationsSettingsInput } from './inputs/change-notifications-settings.input';
@@ -71,13 +72,6 @@ export class NotificationsService {
     const { limit = 20, page = 1 } = input;
 
     const skip = (page - 1) * limit;
-
-    await this.prismaService.notifications.updateMany({
-      where: { isRead: false, userId: user.id },
-      data: {
-        isRead: true,
-      },
-    });
 
     const [notifications, total] = await Promise.all([
       await this.prismaService.notifications.findMany({
@@ -376,6 +370,33 @@ export class NotificationsService {
     });
   }
 
+  async notifyAdminsAboutNewOrder(orderId: string, customerId: string) {
+    const admins = await this.prismaService.user.findMany({
+      where: {
+        role: {
+          in: [Role.ADMIN, Role.MANAGER],
+        },
+      },
+      select: { id: true },
+    });
+
+    if (admins.length === 0) {
+      return;
+    }
+
+    await Promise.all(
+      admins.map(({ id }) =>
+        this.createNotification({
+          userId: id,
+          type: NotificationsType.ORDER_PLACED,
+          message: `Поступил новый заказ #${orderId.slice(-8).toUpperCase()}. Проверьте и обработайте его.`,
+          actorId: customerId,
+          projectId: orderId,
+        }),
+      ),
+    );
+  }
+
   async notifyOrderPaid(userId: string, orderId: string) {
     await this.createNotification({
       userId,
@@ -390,10 +411,23 @@ export class NotificationsService {
     orderId: string,
     status: string,
   ) {
+    const statusRu: Record<string, string> = {
+      CONFIRMED: 'подтвержден',
+      SHIPPED: 'отправлен',
+      DELIVERED: 'доставлен',
+      COMPLETED: 'завершен',
+      CANCELLED: 'отменен',
+      REFUNDED: 'возвращен',
+      PROCESSING: 'в обработке',
+      PENDING: 'ожидает обработки',
+      PAID: 'оплачен',
+    };
+
     const statusMessages: Record<string, string> = {
       CONFIRMED: `Ваш заказ #${orderId.slice(-8).toUpperCase()} подтверждён.`,
       SHIPPED: `Ваш заказ #${orderId.slice(-8).toUpperCase()} отправлен.`,
       DELIVERED: `Ваш заказ #${orderId.slice(-8).toUpperCase()} доставлен. Приятных покупок!`,
+      COMPLETED: `Ваш заказ #${orderId.slice(-8).toUpperCase()} завершён.`,
       CANCELLED: `Ваш заказ #${orderId.slice(-8).toUpperCase()} был отменён.`,
       REFUNDED: `По заказу #${orderId.slice(-8).toUpperCase()} выполнен возврат средств.`,
     };
@@ -408,7 +442,7 @@ export class NotificationsService {
 
     const message =
       statusMessages[status] ??
-      `Статус вашего заказа #${orderId.slice(-8).toUpperCase()} изменён на ${status}.`;
+      `Статус вашего заказа #${orderId.slice(-8).toUpperCase()} изменён на ${statusRu[status] ?? status}.`;
     const type = typeMap[status] ?? NotificationsType.ORDER_STATUS_CHANGED;
 
     await this.createNotification({
@@ -438,15 +472,28 @@ export class NotificationsService {
   }
 
   async notifyNewPost(title: string) {
-    const users = await this.prismaService.notificationsSettings.findMany({
-      where: { siteNotifications: true },
-      select: { userId: true },
-    });
+    const [users, disabledSettings] = await Promise.all([
+      this.prismaService.user.findMany({
+        where: { isDeactivated: false },
+        select: { id: true },
+      }),
+      this.prismaService.notificationsSettings.findMany({
+        where: { siteNotifications: false },
+        select: { userId: true },
+      }),
+    ]);
+
+    const disabledUserIds = new Set(disabledSettings.map(item => item.userId));
+    const recipients = users.filter(user => !disabledUserIds.has(user.id));
+
+    if (recipients.length === 0) {
+      return;
+    }
 
     await Promise.all(
-      users.map(({ userId }) =>
+      recipients.map(({ id }) =>
         this.createNotification({
-          userId,
+          userId: id,
           type: NotificationsType.NEW_POST,
           message: `Новая статья: «${title}»`,
         }),

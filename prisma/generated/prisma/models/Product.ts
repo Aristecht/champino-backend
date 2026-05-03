@@ -82,7 +82,6 @@ export type ProductCountAggregateOutputType = {
   stock: number
   isPublished: number
   isDraft: number
-  images: number
   categoryId: number
   attributes: number
   discountPercent: number
@@ -150,7 +149,6 @@ export type ProductCountAggregateInputType = {
   stock?: true
   isPublished?: true
   isDraft?: true
-  images?: true
   categoryId?: true
   attributes?: true
   discountPercent?: true
@@ -255,7 +253,6 @@ export type ProductGroupByOutputType = {
   stock: number
   isPublished: boolean
   isDraft: boolean
-  images: string[]
   categoryId: string | null
   attributes: runtime.JsonValue | null
   discountPercent: number | null
@@ -296,7 +293,6 @@ export type ProductWhereInput = {
   stock?: Prisma.IntFilter<"Product"> | number
   isPublished?: Prisma.BoolFilter<"Product"> | boolean
   isDraft?: Prisma.BoolFilter<"Product"> | boolean
-  images?: Prisma.StringNullableListFilter<"Product">
   categoryId?: Prisma.StringNullableFilter<"Product"> | string | null
   attributes?: Prisma.JsonNullableFilter<"Product">
   discountPercent?: Prisma.IntNullableFilter<"Product"> | number | null
@@ -320,7 +316,6 @@ export type ProductOrderByWithRelationInput = {
   stock?: Prisma.SortOrder
   isPublished?: Prisma.SortOrder
   isDraft?: Prisma.SortOrder
-  images?: Prisma.SortOrder
   categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   attributes?: Prisma.SortOrderInput | Prisma.SortOrder
   discountPercent?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -347,7 +342,6 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   stock?: Prisma.IntFilter<"Product"> | number
   isPublished?: Prisma.BoolFilter<"Product"> | boolean
   isDraft?: Prisma.BoolFilter<"Product"> | boolean
-  images?: Prisma.StringNullableListFilter<"Product">
   categoryId?: Prisma.StringNullableFilter<"Product"> | string | null
   attributes?: Prisma.JsonNullableFilter<"Product">
   discountPercent?: Prisma.IntNullableFilter<"Product"> | number | null
@@ -371,7 +365,6 @@ export type ProductOrderByWithAggregationInput = {
   stock?: Prisma.SortOrder
   isPublished?: Prisma.SortOrder
   isDraft?: Prisma.SortOrder
-  images?: Prisma.SortOrder
   categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   attributes?: Prisma.SortOrderInput | Prisma.SortOrder
   discountPercent?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -397,7 +390,6 @@ export type ProductScalarWhereWithAggregatesInput = {
   stock?: Prisma.IntWithAggregatesFilter<"Product"> | number
   isPublished?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
   isDraft?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
-  images?: Prisma.StringNullableListFilter<"Product">
   categoryId?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   attributes?: Prisma.JsonNullableWithAggregatesFilter<"Product">
   discountPercent?: Prisma.IntNullableWithAggregatesFilter<"Product"> | number | null
@@ -415,7 +407,6 @@ export type ProductCreateInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
   avgRating?: number
@@ -438,7 +429,6 @@ export type ProductUncheckedCreateInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   categoryId?: string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
@@ -461,7 +451,6 @@ export type ProductUpdateInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -484,7 +473,6 @@ export type ProductUncheckedUpdateInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -507,7 +495,6 @@ export type ProductCreateManyInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   categoryId?: string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
@@ -525,7 +512,6 @@ export type ProductUpdateManyMutationInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -542,7 +528,6 @@ export type ProductUncheckedUpdateManyInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -562,14 +547,6 @@ export type ProductOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type StringNullableListFilter<$PrismaModel = never> = {
-  equals?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null
-  has?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
-  hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
-  hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
-  isEmpty?: boolean
-}
-
 export type ProductCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -578,7 +555,6 @@ export type ProductCountOrderByAggregateInput = {
   stock?: Prisma.SortOrder
   isPublished?: Prisma.SortOrder
   isDraft?: Prisma.SortOrder
-  images?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
   discountPercent?: Prisma.SortOrder
@@ -683,10 +659,6 @@ export type ProductUncheckedUpdateManyWithoutCategoryNestedInput = {
   deleteMany?: Prisma.ProductScalarWhereInput | Prisma.ProductScalarWhereInput[]
 }
 
-export type ProductCreateimagesInput = {
-  set: string[]
-}
-
 export type NullableDecimalFieldUpdateOperationsInput = {
   set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -701,11 +673,6 @@ export type IntFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
-}
-
-export type ProductUpdateimagesInput = {
-  set?: string[]
-  push?: string | string[]
 }
 
 export type NullableIntFieldUpdateOperationsInput = {
@@ -802,7 +769,6 @@ export type ProductCreateWithoutCategoryInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
   avgRating?: number
@@ -824,7 +790,6 @@ export type ProductUncheckedCreateWithoutCategoryInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
   avgRating?: number
@@ -875,7 +840,6 @@ export type ProductScalarWhereInput = {
   stock?: Prisma.IntFilter<"Product"> | number
   isPublished?: Prisma.BoolFilter<"Product"> | boolean
   isDraft?: Prisma.BoolFilter<"Product"> | boolean
-  images?: Prisma.StringNullableListFilter<"Product">
   categoryId?: Prisma.StringNullableFilter<"Product"> | string | null
   attributes?: Prisma.JsonNullableFilter<"Product">
   discountPercent?: Prisma.IntNullableFilter<"Product"> | number | null
@@ -893,7 +857,6 @@ export type ProductCreateWithoutCartItemsInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
   avgRating?: number
@@ -915,7 +878,6 @@ export type ProductUncheckedCreateWithoutCartItemsInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   categoryId?: string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
@@ -953,7 +915,6 @@ export type ProductUpdateWithoutCartItemsInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -975,7 +936,6 @@ export type ProductUncheckedUpdateWithoutCartItemsInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -997,7 +957,6 @@ export type ProductCreateWithoutOrderItemsInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
   avgRating?: number
@@ -1019,7 +978,6 @@ export type ProductUncheckedCreateWithoutOrderItemsInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   categoryId?: string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
@@ -1057,7 +1015,6 @@ export type ProductUpdateWithoutOrderItemsInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1079,7 +1036,6 @@ export type ProductUncheckedUpdateWithoutOrderItemsInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1101,7 +1057,6 @@ export type ProductCreateWithoutMediasInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
   avgRating?: number
@@ -1123,7 +1078,6 @@ export type ProductUncheckedCreateWithoutMediasInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   categoryId?: string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
@@ -1161,7 +1115,6 @@ export type ProductUpdateWithoutMediasInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1183,7 +1136,6 @@ export type ProductUncheckedUpdateWithoutMediasInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1205,7 +1157,6 @@ export type ProductCreateWithoutReviewsInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
   avgRating?: number
@@ -1227,7 +1178,6 @@ export type ProductUncheckedCreateWithoutReviewsInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   categoryId?: string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
@@ -1265,7 +1215,6 @@ export type ProductUpdateWithoutReviewsInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1287,7 +1236,6 @@ export type ProductUncheckedUpdateWithoutReviewsInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1309,7 +1257,6 @@ export type ProductCreateWithoutVariantsInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
   avgRating?: number
@@ -1331,7 +1278,6 @@ export type ProductUncheckedCreateWithoutVariantsInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   categoryId?: string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
@@ -1369,7 +1315,6 @@ export type ProductUpdateWithoutVariantsInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1391,7 +1336,6 @@ export type ProductUncheckedUpdateWithoutVariantsInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1413,7 +1357,6 @@ export type ProductCreateManyCategoryInput = {
   stock?: number
   isPublished?: boolean
   isDraft?: boolean
-  images?: Prisma.ProductCreateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: number | null
   avgRating?: number
@@ -1430,7 +1373,6 @@ export type ProductUpdateWithoutCategoryInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1452,7 +1394,6 @@ export type ProductUncheckedUpdateWithoutCategoryInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1474,7 +1415,6 @@ export type ProductUncheckedUpdateManyWithoutCategoryInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDraft?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  images?: Prisma.ProductUpdateimagesInput | string[]
   attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1558,7 +1498,6 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   stock?: boolean
   isPublished?: boolean
   isDraft?: boolean
-  images?: boolean
   categoryId?: boolean
   attributes?: boolean
   discountPercent?: boolean
@@ -1583,7 +1522,6 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   stock?: boolean
   isPublished?: boolean
   isDraft?: boolean
-  images?: boolean
   categoryId?: boolean
   attributes?: boolean
   discountPercent?: boolean
@@ -1602,7 +1540,6 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   stock?: boolean
   isPublished?: boolean
   isDraft?: boolean
-  images?: boolean
   categoryId?: boolean
   attributes?: boolean
   discountPercent?: boolean
@@ -1621,7 +1558,6 @@ export type ProductSelectScalar = {
   stock?: boolean
   isPublished?: boolean
   isDraft?: boolean
-  images?: boolean
   categoryId?: boolean
   attributes?: boolean
   discountPercent?: boolean
@@ -1631,7 +1567,7 @@ export type ProductSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "price" | "stock" | "isPublished" | "isDraft" | "images" | "categoryId" | "attributes" | "discountPercent" | "avgRating" | "reviewCount" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "price" | "stock" | "isPublished" | "isDraft" | "categoryId" | "attributes" | "discountPercent" | "avgRating" | "reviewCount" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
   cartItems?: boolean | Prisma.Product$cartItemsArgs<ExtArgs>
@@ -1666,7 +1602,6 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     stock: number
     isPublished: boolean
     isDraft: boolean
-    images: string[]
     categoryId: string | null
     attributes: runtime.JsonValue | null
     discountPercent: number | null
@@ -2110,7 +2045,6 @@ export interface ProductFieldRefs {
   readonly stock: Prisma.FieldRef<"Product", 'Int'>
   readonly isPublished: Prisma.FieldRef<"Product", 'Boolean'>
   readonly isDraft: Prisma.FieldRef<"Product", 'Boolean'>
-  readonly images: Prisma.FieldRef<"Product", 'String[]'>
   readonly categoryId: Prisma.FieldRef<"Product", 'String'>
   readonly attributes: Prisma.FieldRef<"Product", 'Json'>
   readonly discountPercent: Prisma.FieldRef<"Product", 'Int'>

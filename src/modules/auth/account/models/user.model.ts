@@ -16,7 +16,7 @@ export class UserModel implements User {
   @Field(() => String)
   email: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   phoneNumber: string;
 
   @Field(() => String)
@@ -54,7 +54,7 @@ export class UserModel implements User {
   @Field(() => NotificationSettingsModel)
   notificationsSettings: NotificationSettingsModel;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   pendingNewEmail: string;
 
   @Field(() => Role)

@@ -46,18 +46,6 @@ export class NewsResolver {
   }
 
   @Authorization(Role.ADMIN, Role.MANAGER)
-  @Mutation(() => PostModel, { name: 'createPost' })
-  createPost(@Args('data') input: CreatePostInput) {
-    return this.newsService.create(input);
-  }
-
-  @Authorization(Role.ADMIN, Role.MANAGER)
-  @Mutation(() => PostModel, { name: 'updatePost' })
-  updatePost(@Args('id') id: string, @Args('data') input: UpdatePostInput) {
-    return this.newsService.update(id, input);
-  }
-
-  @Authorization(Role.ADMIN, Role.MANAGER)
   @Mutation(() => Boolean, { name: 'deletePost' })
   deletePost(@Args('id') id: string) {
     return this.newsService.remove(id);

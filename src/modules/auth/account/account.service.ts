@@ -33,6 +33,24 @@ export class AccountService {
     return this.prismaService.user.findMany();
   }
 
+  async findNotificationSettings(userId: string) {
+    return this.prismaService.notificationsSettings.findFirst({
+      where: { userId },
+    });
+  }
+
+  async createDefaultNotificationSettings(userId: string) {
+    return this.prismaService.notificationsSettings.upsert({
+      where: { userId },
+      update: {},
+      create: {
+        user: {
+          connect: { id: userId },
+        },
+      },
+    });
+  }
+
   async me(id: string) {
     const user = await this.prismaService.user.findUnique({
       where: { id },

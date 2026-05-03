@@ -1,56 +1,47 @@
-import * as React from 'react'
-import { Html } from "@react-email/html"
-import { Body, Head, Heading, Link, Preview, Section, Tailwind, Text } from "@react-email/components"
-import type { SessionMetadata } from '../../../../shared/types/session-metadata.types'
+import * as React from 'react';
+import { Heading, Section, Text } from '@react-email/components';
+import type { SessionMetadata } from '../../../../shared/types/session-metadata.types';
+import { BaseEmailTemplate } from './base-email.template';
 
 interface DeactiavteTemplateProps {
-    token: string
-    metadata: SessionMetadata
+    token: string;
+    metadata: SessionMetadata;
 }
 
 export function DeactiavteTemplate({ token, metadata }: DeactiavteTemplateProps) {
     return (
-        <Html>
-            <Head />
-            <Preview>Portfolio-Hub: Деактивация аккаунта</Preview>
-            <Tailwind>
-                <Body className='max-w-2xl mx-auto p-6 bg-slate-50'>
-                    <Section className='text-center mb-8'>
-                        <Heading className='text-3xl text-black font-bold'>Деактивация аккаунта</Heading>
-                        <Text className='text-base text-black'>
-                            Вы инициировали процесс деактивации вашего аккаунта на платформе <b>Portfolio-Hub</b>.
-                        </Text>
-                    </Section>
-                    <Section className='bg-gray-100 rounded-lg p-6 text-center mb-6'>
-                        <Heading className='text-2xl text-black font-semibold'>Код подтверждения: </Heading>
-                        <Heading className='text-3xl text-black font-semibold'>{token}</Heading>
-                        <Text>Этот код действителен в течении 5 минут.</Text>
-                    </Section>
-                    <Section className='bg-gray-100 rounded-lg p-6 mb-6'>
-                        <Section className='ml-20'>
-                            <Heading className='text-xl font-semibold text-[#18B9AE]'>Инфоррмация о запросе</Heading>
-                            <ul className='list-disc list-inside mt-2 text-base text-black'>
-                                <li>📍 Расположение: {metadata.location.country}, {metadata.location.city}</li>
-                                <li>📱 Операционная система: {metadata.device.type}, {metadata.device.os}</li>
-                                <li>🌍 Браузер: {metadata.device.browser}</li>
-                                <li>💻 IP-адрес: {metadata.ip}</li>
-                            </ul>
-                            <Text className='text-gray-600 mt-2'>
-                                Если вы не инициировали этот запрос. пожалуйста, игнорируйте это сообщение.
-                            </Text>
-                        </Section>
-                    </Section>
-                    <Section className='text-center'>
-                        <Text className='text-gray-600'>
-                            Если у вас есть вопросы или вы столкнулись с
-                            трудностями, не стесняйтесь в нашу службу поддержки по адресу {' '}
-                            <Link href='mailto:aristiktop8@gmail.com' className='text-[#18B9AE] underline'>
-                                aristiktop8@gmail.com
-                            </Link>
-                        </Text>
-                    </Section>
-                </Body>
-            </Tailwind>
-        </Html>
-    )
+        <BaseEmailTemplate
+            preview="Champino: деактивация аккаунта"
+            eyebrow="CHAMPINO SECURITY"
+            heading="Деактивация аккаунта"
+            intro="Вы инициировали деактивацию аккаунта. Используйте код подтверждения ниже в течение 5 минут."
+        >
+            <Section className="mx-auto mt-5 w-full max-w-xl rounded-2xl border border-[#ffe4e7] bg-[#fff8f9] px-6 py-6 text-center">
+                <Text className="m-0 text-xs font-semibold tracking-[0.12em] text-[#b02432] uppercase">
+                    Код подтверждения
+                </Text>
+                <Heading className="m-0 mt-2 text-[34px] font-bold tracking-[0.2em] text-[#c62131]">
+                    {token}
+                </Heading>
+                <Text className="m-0 mt-2 text-[13px] leading-6 text-[#6f6067]">
+                    Код действителен 5 минут.
+                </Text>
+            </Section>
+
+            <Section className="mx-auto mt-5 w-full max-w-xl rounded-2xl border border-[#ffe4e7] bg-[#fff8f9] px-5 py-5">
+                <Heading className="m-0 mb-3 text-lg font-semibold text-[#bf2432]">
+                    Информация о запросе
+                </Heading>
+                <Text className="m-0 text-[14px] leading-7 text-[#54474e]">
+                    📍 Расположение: {metadata.location.country}, {metadata.location.city}
+                    <br />📱 Устройство: {metadata.device.type}, {metadata.device.os}
+                    <br />🌍 Браузер: {metadata.device.browser}
+                    <br />💻 IP-адрес: {metadata.ip}
+                </Text>
+                <Text className="m-0 mt-3 text-[13px] leading-6 text-[#6f6067]">
+                    Если вы не запускали этот процесс, проигнорируйте письмо.
+                </Text>
+            </Section>
+        </BaseEmailTemplate>
+    );
 }

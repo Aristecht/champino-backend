@@ -19,7 +19,9 @@ model User {
 
   notifications         Notifications[]
   notificationsSettings NotificationsSettings?
+  loyaltyCard           LoyaltyCard?
 
+  isVerified      Boolean   @default(false) @map("is_verified")
   isEmailVerified Boolean   @default(false) @map("is_email_verified")
   isTotpEnabled   Boolean   @default(false) @map("is_totp_enabled")
   totpSecret      String?   @map("totp_secret")
@@ -78,7 +80,6 @@ model Product {
   stock       Int      @default(0)
   isPublished Boolean  @default(false) @map("is_published")
   isDraft     Boolean  @default(true) @map("is_draft")
-  images      String[]
 
   category   Category? @relation(fields: [categoryId], references: [id])
   categoryId String?   @map("category_id")
@@ -170,14 +171,15 @@ model CartItem {
 model Order {
   id     String      @id @default(uuid())
   userId String      @map("user_id")
-  status OrderStatus @default(PENDING)
+  status OrderStatus @default(PROCESSING)
 
   items    OrderItem[]
   payment  Payment?
   shipping ShippingAddress?
 
-  totalAmount Decimal @map("total_amount") @db.Decimal(12, 2)
-  note        String?
+  totalAmount    Decimal  @map("total_amount") @db.Decimal(12, 2)
+  discountAmount Decimal? @map("discount_amount") @db.Decimal(12, 2)
+  note           String?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -436,6 +438,40 @@ model Token {
   @@map("tokens")
 }
 
+// ─── ПРОГРАММА ЛОЯЛЬНОСТИ ────────────────────────────────────────────────────
+
+model LoyaltyCard {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique @map("user_id")
+
+  totalOrders Int @default(0) @map("total_orders") // кол-во завершённых заказов
+  discountPct Int @default(0) @map("discount_pct") // 0, 2, 3 или 5
+
+  qrToken String @unique @map("qr_token") // токен для QR-кода на кассе
+
+  accrualOperations LoyaltyAccrualOperation[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("loyalty_cards")
+}
+
+model LoyaltyAccrualOperation {
+  id String @id @default(uuid())
+
+  operationId String @unique @map("operation_id") // внешний id оплаты/чека от кассы
+
+  loyaltyCard   LoyaltyCard @relation(fields: [loyaltyCardId], references: [id], onDelete: Cascade)
+  loyaltyCardId String      @map("loyalty_card_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([loyaltyCardId])
+  @@map("loyalty_accrual_operations")
+}
+
 enum TokenType {
   EMAIL_VERIFY
   PASSWORD_RESET
@@ -488,11 +524,12 @@ enum PaymentsStatus {
 }
 
 enum OrderStatus {
-  PENDING
-  PAID
   PROCESSING
-  SHIPPED
+  ASSEMBLING
+  READY_FOR_PICKUP
+  IN_TRANSIT
   DELIVERED
+  COMPLETED
   CANCELLED
   REFUNDED
 }

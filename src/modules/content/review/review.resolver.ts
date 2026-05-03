@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ReviewService } from './review.service';
 import { ReviewListModel, ReviewModel } from './models/review.model';
 import { CreateReviewInput } from './inputs/create-review.input';
@@ -12,8 +12,14 @@ export class ReviewResolver {
   constructor(private readonly reviewService: ReviewService) {}
 
   @Query(() => ReviewListModel, { name: 'getProductReviews' })
-  getProductReviews(@Args('productId') productId: string) {
-    return this.reviewService.getProductReviews(productId);
+  getProductReviews(
+    @Args('productId') productId: string,
+    @Args('page', { type: () => Int, nullable: true, defaultValue: 1 })
+    page?: number,
+    @Args('limit', { type: () => Int, nullable: true, defaultValue: 10 })
+    limit?: number,
+  ) {
+    return this.reviewService.getProductReviews(productId, page, limit);
   }
 
   @Authorization()

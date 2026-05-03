@@ -139,24 +139,13 @@ input CreateOrderInput {
   shipping: ShippingAddressInput!
 }
 
-input CreatePostInput {
-  body: String!
-  coverImage: String
-  excerpt: String
-  isPublished: Boolean
-  slug: String!
-  tags: [String!]
-  title: String!
-}
-
 input CreateProductInput {
   attributes: JSON
   categoryId: String!
   description: String
   discountPercent: Int = 0
   draftId: String!
-  images: [String!]
-  isPublished: Boolean = false
+  isPublished: Boolean = true
   name: String!
   price: Float!
   stock: Int = 0
@@ -263,6 +252,29 @@ input LoginInput {
   pin: String
 }
 
+type LoyaltyCardModel {
+  createdAt: DateTime!
+  discountPct: Int!
+  id: String!
+  qrToken: String!
+  qrUrl: String!
+  totalOrders: Int!
+  updatedAt: DateTime!
+}
+
+type LoyaltyCardWithUserModel {
+  createdAt: DateTime!
+  discountPct: Int!
+  email: String
+  id: String!
+  phoneNumber: String
+  qrToken: String!
+  qrUrl: String!
+  totalOrders: Int!
+  updatedAt: DateTime!
+  username: String
+}
+
 enum MediaType {
   IMAGE
   VIDEO
@@ -285,11 +297,11 @@ type Mutation {
   checkPaymentStatus(orderId: String!): Boolean!
   clearCart: Boolean!
   clearSessionCookie: Boolean!
+  confirmLoyaltyPurchase(operationId: String!, qrToken: String!): LoyaltyCardModel!
   createAddress(data: CreateAddressInput!): UserAddressModel!
   createCategory(data: CreateCategoryInput!): CategoryModel!
   createDraftProduct: ProductModel!
   createOrder(data: CreateOrderInput!): OrderModel!
-  createPost(data: CreatePostInput!): PostModel!
   createProduct(data: CreateProductInput!): ProductModel!
   createReview(data: CreateReviewInput!): ReviewModel!
   createUser(data: CreateUserInput!): UserModel!
@@ -326,7 +338,6 @@ type Mutation {
   updateAddress(data: UpdateAddressInput!, id: String!): UserAddressModel!
   updateCartItem(data: UpdateCartItemInput!): CartModel!
   updateCategory(data: UpdateCategoryInput!, id: String!): CategoryModel!
-  updatePost(data: UpdatePostInput!, id: String!): PostModel!
   updateProduct(data: UpdateProductInput!, id: String!): ProductModel!
   updateReview(data: UpdateReviewInput!, reviewId: String!): ReviewModel!
   updateVariant(data: UpdateVariantInput!, variantId: String!): ProductVariantModel!
@@ -429,13 +440,14 @@ type OrderProductModel {
 }
 
 enum OrderStatus {
+  ASSEMBLING
   CANCELLED
+  COMPLETED
   DELIVERED
-  PAID
-  PENDING
+  IN_TRANSIT
   PROCESSING
+  READY_FOR_PICKUP
   REFUNDED
-  SHIPPED
 }
 
 type OutputNotificationModel {
@@ -551,7 +563,6 @@ type ProductModel {
   """Цена после скидки"""
   discountedPrice: Float
   id: ID!
-  images: [String!]!
   isDraft: Boolean!
   isPublished: Boolean!
   medias: [ProductMediaModel!]
@@ -603,8 +614,10 @@ type Query {
   getMyOrders(filter: FilterOrderInput): OrderListModel!
   getPost(slug: String!): PostModel!
   getPosts(filter: FilterPostInput): PostListModel!
-  getProductReviews(productId: String!): ReviewListModel!
+  getProductReviews(limit: Int = 10, page: Int = 1, productId: String!): ReviewListModel!
   getProductVariants(productId: String!): [ProductVariantModel!]!
+  loyaltyCardByToken(qrToken: String!): LoyaltyCardWithUserModel
+  myLoyaltyCard: LoyaltyCardModel!
 }
 
 input RegisterDeviceTokenInput {
@@ -626,6 +639,8 @@ type RevenueByPeriodModel {
 type ReviewListModel {
   avgRating: Float!
   data: [ReviewModel!]!
+  limit: Int!
+  page: Int!
   total: Int!
 }
 
@@ -736,22 +751,11 @@ input UpdateOrderStatusInput {
   status: OrderStatus!
 }
 
-input UpdatePostInput {
-  body: String
-  coverImage: String
-  excerpt: String
-  isPublished: Boolean
-  slug: String
-  tags: [String!]
-  title: String
-}
-
 input UpdateProductInput {
   attributes: JSON
   categoryId: String
   description: String
   discountPercent: Int
-  images: [String!]
   isPublished: Boolean
   name: String
   price: Float
@@ -803,8 +807,8 @@ type UserModel {
   notifications: [String!]!
   notificationsSettings: NotificationSettingsModel!
   password: String!
-  pendingNewEmail: String!
-  phoneNumber: String!
+  pendingNewEmail: String
+  phoneNumber: String
   role: Role!
   totpSecret: String
   updatedAt: DateTime!

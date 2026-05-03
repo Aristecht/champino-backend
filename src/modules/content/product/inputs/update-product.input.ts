@@ -36,10 +36,6 @@ export class UpdateProductInput {
   @Min(0)
   stock?: number;
 
-  @Field(() => [String], { nullable: true })
-  @IsOptional()
-  images?: string[];
-
   @Field(() => String, { nullable: true })
   @IsUUID()
   @IsOptional()

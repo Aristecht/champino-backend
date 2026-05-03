@@ -30,6 +30,7 @@ export type UserMinAggregateOutputType = {
   email: string | null
   pendingNewEmail: string | null
   password: string | null
+  isVerified: boolean | null
   isEmailVerified: boolean | null
   isTotpEnabled: boolean | null
   totpSecret: string | null
@@ -47,6 +48,7 @@ export type UserMaxAggregateOutputType = {
   email: string | null
   pendingNewEmail: string | null
   password: string | null
+  isVerified: boolean | null
   isEmailVerified: boolean | null
   isTotpEnabled: boolean | null
   totpSecret: string | null
@@ -64,6 +66,7 @@ export type UserCountAggregateOutputType = {
   email: number
   pendingNewEmail: number
   password: number
+  isVerified: number
   isEmailVerified: number
   isTotpEnabled: number
   totpSecret: number
@@ -83,6 +86,7 @@ export type UserMinAggregateInputType = {
   email?: true
   pendingNewEmail?: true
   password?: true
+  isVerified?: true
   isEmailVerified?: true
   isTotpEnabled?: true
   totpSecret?: true
@@ -100,6 +104,7 @@ export type UserMaxAggregateInputType = {
   email?: true
   pendingNewEmail?: true
   password?: true
+  isVerified?: true
   isEmailVerified?: true
   isTotpEnabled?: true
   totpSecret?: true
@@ -117,6 +122,7 @@ export type UserCountAggregateInputType = {
   email?: true
   pendingNewEmail?: true
   password?: true
+  isVerified?: true
   isEmailVerified?: true
   isTotpEnabled?: true
   totpSecret?: true
@@ -207,6 +213,7 @@ export type UserGroupByOutputType = {
   email: string
   pendingNewEmail: string | null
   password: string
+  isVerified: boolean
   isEmailVerified: boolean
   isTotpEnabled: boolean
   totpSecret: string | null
@@ -245,6 +252,7 @@ export type UserWhereInput = {
   email?: Prisma.StringFilter<"User"> | string
   pendingNewEmail?: Prisma.StringNullableFilter<"User"> | string | null
   password?: Prisma.StringFilter<"User"> | string
+  isVerified?: Prisma.BoolFilter<"User"> | boolean
   isEmailVerified?: Prisma.BoolFilter<"User"> | boolean
   isTotpEnabled?: Prisma.BoolFilter<"User"> | boolean
   totpSecret?: Prisma.StringNullableFilter<"User"> | string | null
@@ -257,6 +265,7 @@ export type UserWhereInput = {
   tokens?: Prisma.TokenListRelationFilter
   notifications?: Prisma.NotificationsListRelationFilter
   notificationsSettings?: Prisma.XOR<Prisma.NotificationsSettingsNullableScalarRelationFilter, Prisma.NotificationsSettingsWhereInput> | null
+  loyaltyCard?: Prisma.XOR<Prisma.LoyaltyCardNullableScalarRelationFilter, Prisma.LoyaltyCardWhereInput> | null
   accounts?: Prisma.AccountListRelationFilter
   fcmTokens?: Prisma.DeviceTokenListRelationFilter
   articleComments?: Prisma.ArticleCommentListRelationFilter
@@ -268,6 +277,7 @@ export type UserOrderByWithRelationInput = {
   email?: Prisma.SortOrder
   pendingNewEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   password?: Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
   isEmailVerified?: Prisma.SortOrder
   isTotpEnabled?: Prisma.SortOrder
   totpSecret?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -280,6 +290,7 @@ export type UserOrderByWithRelationInput = {
   tokens?: Prisma.TokenOrderByRelationAggregateInput
   notifications?: Prisma.NotificationsOrderByRelationAggregateInput
   notificationsSettings?: Prisma.NotificationsSettingsOrderByWithRelationInput
+  loyaltyCard?: Prisma.LoyaltyCardOrderByWithRelationInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   fcmTokens?: Prisma.DeviceTokenOrderByRelationAggregateInput
   articleComments?: Prisma.ArticleCommentOrderByRelationAggregateInput
@@ -295,6 +306,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   pendingNewEmail?: Prisma.StringNullableFilter<"User"> | string | null
   password?: Prisma.StringFilter<"User"> | string
+  isVerified?: Prisma.BoolFilter<"User"> | boolean
   isEmailVerified?: Prisma.BoolFilter<"User"> | boolean
   isTotpEnabled?: Prisma.BoolFilter<"User"> | boolean
   totpSecret?: Prisma.StringNullableFilter<"User"> | string | null
@@ -306,6 +318,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   tokens?: Prisma.TokenListRelationFilter
   notifications?: Prisma.NotificationsListRelationFilter
   notificationsSettings?: Prisma.XOR<Prisma.NotificationsSettingsNullableScalarRelationFilter, Prisma.NotificationsSettingsWhereInput> | null
+  loyaltyCard?: Prisma.XOR<Prisma.LoyaltyCardNullableScalarRelationFilter, Prisma.LoyaltyCardWhereInput> | null
   accounts?: Prisma.AccountListRelationFilter
   fcmTokens?: Prisma.DeviceTokenListRelationFilter
   articleComments?: Prisma.ArticleCommentListRelationFilter
@@ -317,6 +330,7 @@ export type UserOrderByWithAggregationInput = {
   email?: Prisma.SortOrder
   pendingNewEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   password?: Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
   isEmailVerified?: Prisma.SortOrder
   isTotpEnabled?: Prisma.SortOrder
   totpSecret?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -340,6 +354,7 @@ export type UserScalarWhereWithAggregatesInput = {
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   pendingNewEmail?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   password?: Prisma.StringWithAggregatesFilter<"User"> | string
+  isVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   isEmailVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   isTotpEnabled?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   totpSecret?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -357,6 +372,7 @@ export type UserCreateInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -369,6 +385,7 @@ export type UserCreateInput = {
   tokens?: Prisma.TokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationsCreateNestedManyWithoutUserInput
   notificationsSettings?: Prisma.NotificationsSettingsCreateNestedOneWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   fcmTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
   articleComments?: Prisma.ArticleCommentCreateNestedManyWithoutUserInput
@@ -380,6 +397,7 @@ export type UserUncheckedCreateInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -392,6 +410,7 @@ export type UserUncheckedCreateInput = {
   tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationsUncheckedCreateNestedManyWithoutUserInput
   notificationsSettings?: Prisma.NotificationsSettingsUncheckedCreateNestedOneWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   fcmTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
   articleComments?: Prisma.ArticleCommentUncheckedCreateNestedManyWithoutUserInput
@@ -403,6 +422,7 @@ export type UserUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -415,6 +435,7 @@ export type UserUpdateInput = {
   tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationsUpdateManyWithoutUserNestedInput
   notificationsSettings?: Prisma.NotificationsSettingsUpdateOneWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   fcmTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
   articleComments?: Prisma.ArticleCommentUpdateManyWithoutUserNestedInput
@@ -426,6 +447,7 @@ export type UserUncheckedUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -438,6 +460,7 @@ export type UserUncheckedUpdateInput = {
   tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationsUncheckedUpdateManyWithoutUserNestedInput
   notificationsSettings?: Prisma.NotificationsSettingsUncheckedUpdateOneWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   fcmTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
   articleComments?: Prisma.ArticleCommentUncheckedUpdateManyWithoutUserNestedInput
@@ -449,6 +472,7 @@ export type UserCreateManyInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -466,6 +490,7 @@ export type UserUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -483,6 +508,7 @@ export type UserUncheckedUpdateManyInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -500,6 +526,7 @@ export type UserCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   pendingNewEmail?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
   isEmailVerified?: Prisma.SortOrder
   isTotpEnabled?: Prisma.SortOrder
   totpSecret?: Prisma.SortOrder
@@ -517,6 +544,7 @@ export type UserMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   pendingNewEmail?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
   isEmailVerified?: Prisma.SortOrder
   isTotpEnabled?: Prisma.SortOrder
   totpSecret?: Prisma.SortOrder
@@ -534,6 +562,7 @@ export type UserMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   pendingNewEmail?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
   isEmailVerified?: Prisma.SortOrder
   isTotpEnabled?: Prisma.SortOrder
   totpSecret?: Prisma.SortOrder
@@ -669,12 +698,27 @@ export type UserUpdateOneWithoutTokensNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTokensInput, Prisma.UserUpdateWithoutTokensInput>, Prisma.UserUncheckedUpdateWithoutTokensInput>
 }
 
+export type UserCreateNestedOneWithoutLoyaltyCardInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLoyaltyCardInput, Prisma.UserUncheckedCreateWithoutLoyaltyCardInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLoyaltyCardInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutLoyaltyCardNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLoyaltyCardInput, Prisma.UserUncheckedCreateWithoutLoyaltyCardInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLoyaltyCardInput
+  upsert?: Prisma.UserUpsertWithoutLoyaltyCardInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLoyaltyCardInput, Prisma.UserUpdateWithoutLoyaltyCardInput>, Prisma.UserUncheckedUpdateWithoutLoyaltyCardInput>
+}
+
 export type UserCreateWithoutAccountsInput = {
   id?: string
   username: string
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -687,6 +731,7 @@ export type UserCreateWithoutAccountsInput = {
   tokens?: Prisma.TokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationsCreateNestedManyWithoutUserInput
   notificationsSettings?: Prisma.NotificationsSettingsCreateNestedOneWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardCreateNestedOneWithoutUserInput
   fcmTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
   articleComments?: Prisma.ArticleCommentCreateNestedManyWithoutUserInput
 }
@@ -697,6 +742,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -709,6 +755,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationsUncheckedCreateNestedManyWithoutUserInput
   notificationsSettings?: Prisma.NotificationsSettingsUncheckedCreateNestedOneWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedCreateNestedOneWithoutUserInput
   fcmTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
   articleComments?: Prisma.ArticleCommentUncheckedCreateNestedManyWithoutUserInput
 }
@@ -735,6 +782,7 @@ export type UserUpdateWithoutAccountsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -747,6 +795,7 @@ export type UserUpdateWithoutAccountsInput = {
   tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationsUpdateManyWithoutUserNestedInput
   notificationsSettings?: Prisma.NotificationsSettingsUpdateOneWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUpdateOneWithoutUserNestedInput
   fcmTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
   articleComments?: Prisma.ArticleCommentUpdateManyWithoutUserNestedInput
 }
@@ -757,6 +806,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -769,6 +819,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationsUncheckedUpdateManyWithoutUserNestedInput
   notificationsSettings?: Prisma.NotificationsSettingsUncheckedUpdateOneWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedUpdateOneWithoutUserNestedInput
   fcmTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
   articleComments?: Prisma.ArticleCommentUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -779,6 +830,7 @@ export type UserCreateWithoutArticleCommentsInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -791,6 +843,7 @@ export type UserCreateWithoutArticleCommentsInput = {
   tokens?: Prisma.TokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationsCreateNestedManyWithoutUserInput
   notificationsSettings?: Prisma.NotificationsSettingsCreateNestedOneWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   fcmTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
 }
@@ -801,6 +854,7 @@ export type UserUncheckedCreateWithoutArticleCommentsInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -813,6 +867,7 @@ export type UserUncheckedCreateWithoutArticleCommentsInput = {
   tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationsUncheckedCreateNestedManyWithoutUserInput
   notificationsSettings?: Prisma.NotificationsSettingsUncheckedCreateNestedOneWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   fcmTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -839,6 +894,7 @@ export type UserUpdateWithoutArticleCommentsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -851,6 +907,7 @@ export type UserUpdateWithoutArticleCommentsInput = {
   tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationsUpdateManyWithoutUserNestedInput
   notificationsSettings?: Prisma.NotificationsSettingsUpdateOneWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   fcmTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
 }
@@ -861,6 +918,7 @@ export type UserUncheckedUpdateWithoutArticleCommentsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -873,6 +931,7 @@ export type UserUncheckedUpdateWithoutArticleCommentsInput = {
   tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationsUncheckedUpdateManyWithoutUserNestedInput
   notificationsSettings?: Prisma.NotificationsSettingsUncheckedUpdateOneWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   fcmTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -883,6 +942,7 @@ export type UserCreateWithoutNotificationsInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -894,6 +954,7 @@ export type UserCreateWithoutNotificationsInput = {
   updatedAt?: Date | string
   tokens?: Prisma.TokenCreateNestedManyWithoutUserInput
   notificationsSettings?: Prisma.NotificationsSettingsCreateNestedOneWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   fcmTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
   articleComments?: Prisma.ArticleCommentCreateNestedManyWithoutUserInput
@@ -905,6 +966,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -916,6 +978,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   updatedAt?: Date | string
   tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput
   notificationsSettings?: Prisma.NotificationsSettingsUncheckedCreateNestedOneWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   fcmTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
   articleComments?: Prisma.ArticleCommentUncheckedCreateNestedManyWithoutUserInput
@@ -943,6 +1006,7 @@ export type UserUpdateWithoutNotificationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -954,6 +1018,7 @@ export type UserUpdateWithoutNotificationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput
   notificationsSettings?: Prisma.NotificationsSettingsUpdateOneWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   fcmTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
   articleComments?: Prisma.ArticleCommentUpdateManyWithoutUserNestedInput
@@ -965,6 +1030,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -976,6 +1042,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput
   notificationsSettings?: Prisma.NotificationsSettingsUncheckedUpdateOneWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   fcmTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
   articleComments?: Prisma.ArticleCommentUncheckedUpdateManyWithoutUserNestedInput
@@ -987,6 +1054,7 @@ export type UserCreateWithoutFcmTokensInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -999,6 +1067,7 @@ export type UserCreateWithoutFcmTokensInput = {
   tokens?: Prisma.TokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationsCreateNestedManyWithoutUserInput
   notificationsSettings?: Prisma.NotificationsSettingsCreateNestedOneWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   articleComments?: Prisma.ArticleCommentCreateNestedManyWithoutUserInput
 }
@@ -1009,6 +1078,7 @@ export type UserUncheckedCreateWithoutFcmTokensInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -1021,6 +1091,7 @@ export type UserUncheckedCreateWithoutFcmTokensInput = {
   tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationsUncheckedCreateNestedManyWithoutUserInput
   notificationsSettings?: Prisma.NotificationsSettingsUncheckedCreateNestedOneWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   articleComments?: Prisma.ArticleCommentUncheckedCreateNestedManyWithoutUserInput
 }
@@ -1047,6 +1118,7 @@ export type UserUpdateWithoutFcmTokensInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1059,6 +1131,7 @@ export type UserUpdateWithoutFcmTokensInput = {
   tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationsUpdateManyWithoutUserNestedInput
   notificationsSettings?: Prisma.NotificationsSettingsUpdateOneWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   articleComments?: Prisma.ArticleCommentUpdateManyWithoutUserNestedInput
 }
@@ -1069,6 +1142,7 @@ export type UserUncheckedUpdateWithoutFcmTokensInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1081,6 +1155,7 @@ export type UserUncheckedUpdateWithoutFcmTokensInput = {
   tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationsUncheckedUpdateManyWithoutUserNestedInput
   notificationsSettings?: Prisma.NotificationsSettingsUncheckedUpdateOneWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   articleComments?: Prisma.ArticleCommentUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1091,6 +1166,7 @@ export type UserCreateWithoutNotificationsSettingsInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -1102,6 +1178,7 @@ export type UserCreateWithoutNotificationsSettingsInput = {
   updatedAt?: Date | string
   tokens?: Prisma.TokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationsCreateNestedManyWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   fcmTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
   articleComments?: Prisma.ArticleCommentCreateNestedManyWithoutUserInput
@@ -1113,6 +1190,7 @@ export type UserUncheckedCreateWithoutNotificationsSettingsInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -1124,6 +1202,7 @@ export type UserUncheckedCreateWithoutNotificationsSettingsInput = {
   updatedAt?: Date | string
   tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationsUncheckedCreateNestedManyWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   fcmTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
   articleComments?: Prisma.ArticleCommentUncheckedCreateNestedManyWithoutUserInput
@@ -1151,6 +1230,7 @@ export type UserUpdateWithoutNotificationsSettingsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1162,6 +1242,7 @@ export type UserUpdateWithoutNotificationsSettingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationsUpdateManyWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   fcmTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
   articleComments?: Prisma.ArticleCommentUpdateManyWithoutUserNestedInput
@@ -1173,6 +1254,7 @@ export type UserUncheckedUpdateWithoutNotificationsSettingsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1184,6 +1266,7 @@ export type UserUncheckedUpdateWithoutNotificationsSettingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationsUncheckedUpdateManyWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   fcmTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
   articleComments?: Prisma.ArticleCommentUncheckedUpdateManyWithoutUserNestedInput
@@ -1195,6 +1278,7 @@ export type UserCreateWithoutTokensInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -1206,6 +1290,7 @@ export type UserCreateWithoutTokensInput = {
   updatedAt?: Date | string
   notifications?: Prisma.NotificationsCreateNestedManyWithoutUserInput
   notificationsSettings?: Prisma.NotificationsSettingsCreateNestedOneWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   fcmTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
   articleComments?: Prisma.ArticleCommentCreateNestedManyWithoutUserInput
@@ -1217,6 +1302,7 @@ export type UserUncheckedCreateWithoutTokensInput = {
   email: string
   pendingNewEmail?: string | null
   password: string
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: string | null
@@ -1228,6 +1314,7 @@ export type UserUncheckedCreateWithoutTokensInput = {
   updatedAt?: Date | string
   notifications?: Prisma.NotificationsUncheckedCreateNestedManyWithoutUserInput
   notificationsSettings?: Prisma.NotificationsSettingsUncheckedCreateNestedOneWithoutUserInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   fcmTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
   articleComments?: Prisma.ArticleCommentUncheckedCreateNestedManyWithoutUserInput
@@ -1255,6 +1342,7 @@ export type UserUpdateWithoutTokensInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1266,6 +1354,7 @@ export type UserUpdateWithoutTokensInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notifications?: Prisma.NotificationsUpdateManyWithoutUserNestedInput
   notificationsSettings?: Prisma.NotificationsSettingsUpdateOneWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   fcmTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
   articleComments?: Prisma.ArticleCommentUpdateManyWithoutUserNestedInput
@@ -1277,6 +1366,7 @@ export type UserUncheckedUpdateWithoutTokensInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1286,6 +1376,119 @@ export type UserUncheckedUpdateWithoutTokensInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationsUncheckedUpdateManyWithoutUserNestedInput
+  notificationsSettings?: Prisma.NotificationsSettingsUncheckedUpdateOneWithoutUserNestedInput
+  loyaltyCard?: Prisma.LoyaltyCardUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  fcmTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+  articleComments?: Prisma.ArticleCommentUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutLoyaltyCardInput = {
+  id?: string
+  username: string
+  email: string
+  pendingNewEmail?: string | null
+  password: string
+  isVerified?: boolean
+  isEmailVerified?: boolean
+  isTotpEnabled?: boolean
+  totpSecret?: string | null
+  isDeactivated?: boolean
+  deactivatedAt?: Date | string | null
+  phoneNumber?: string | null
+  role?: $Enums.Role
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tokens?: Prisma.TokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationsCreateNestedManyWithoutUserInput
+  notificationsSettings?: Prisma.NotificationsSettingsCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  fcmTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
+  articleComments?: Prisma.ArticleCommentCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutLoyaltyCardInput = {
+  id?: string
+  username: string
+  email: string
+  pendingNewEmail?: string | null
+  password: string
+  isVerified?: boolean
+  isEmailVerified?: boolean
+  isTotpEnabled?: boolean
+  totpSecret?: string | null
+  isDeactivated?: boolean
+  deactivatedAt?: Date | string | null
+  phoneNumber?: string | null
+  role?: $Enums.Role
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationsUncheckedCreateNestedManyWithoutUserInput
+  notificationsSettings?: Prisma.NotificationsSettingsUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  fcmTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+  articleComments?: Prisma.ArticleCommentUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutLoyaltyCardInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutLoyaltyCardInput, Prisma.UserUncheckedCreateWithoutLoyaltyCardInput>
+}
+
+export type UserUpsertWithoutLoyaltyCardInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutLoyaltyCardInput, Prisma.UserUncheckedUpdateWithoutLoyaltyCardInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutLoyaltyCardInput, Prisma.UserUncheckedCreateWithoutLoyaltyCardInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutLoyaltyCardInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutLoyaltyCardInput, Prisma.UserUncheckedUpdateWithoutLoyaltyCardInput>
+}
+
+export type UserUpdateWithoutLoyaltyCardInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeactivated?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationsUpdateManyWithoutUserNestedInput
+  notificationsSettings?: Prisma.NotificationsSettingsUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  fcmTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
+  articleComments?: Prisma.ArticleCommentUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutLoyaltyCardInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  pendingNewEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isTotpEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDeactivated?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationsUncheckedUpdateManyWithoutUserNestedInput
   notificationsSettings?: Prisma.NotificationsSettingsUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -1366,6 +1569,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   email?: boolean
   pendingNewEmail?: boolean
   password?: boolean
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: boolean
@@ -1378,6 +1582,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   tokens?: boolean | Prisma.User$tokensArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   notificationsSettings?: boolean | Prisma.User$notificationsSettingsArgs<ExtArgs>
+  loyaltyCard?: boolean | Prisma.User$loyaltyCardArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   fcmTokens?: boolean | Prisma.User$fcmTokensArgs<ExtArgs>
   articleComments?: boolean | Prisma.User$articleCommentsArgs<ExtArgs>
@@ -1390,6 +1595,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   pendingNewEmail?: boolean
   password?: boolean
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: boolean
@@ -1407,6 +1613,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   pendingNewEmail?: boolean
   password?: boolean
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: boolean
@@ -1424,6 +1631,7 @@ export type UserSelectScalar = {
   email?: boolean
   pendingNewEmail?: boolean
   password?: boolean
+  isVerified?: boolean
   isEmailVerified?: boolean
   isTotpEnabled?: boolean
   totpSecret?: boolean
@@ -1435,11 +1643,12 @@ export type UserSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "email" | "pendingNewEmail" | "password" | "isEmailVerified" | "isTotpEnabled" | "totpSecret" | "isDeactivated" | "deactivatedAt" | "phoneNumber" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "email" | "pendingNewEmail" | "password" | "isVerified" | "isEmailVerified" | "isTotpEnabled" | "totpSecret" | "isDeactivated" | "deactivatedAt" | "phoneNumber" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tokens?: boolean | Prisma.User$tokensArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   notificationsSettings?: boolean | Prisma.User$notificationsSettingsArgs<ExtArgs>
+  loyaltyCard?: boolean | Prisma.User$loyaltyCardArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   fcmTokens?: boolean | Prisma.User$fcmTokensArgs<ExtArgs>
   articleComments?: boolean | Prisma.User$articleCommentsArgs<ExtArgs>
@@ -1454,6 +1663,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     tokens: Prisma.$TokenPayload<ExtArgs>[]
     notifications: Prisma.$NotificationsPayload<ExtArgs>[]
     notificationsSettings: Prisma.$NotificationsSettingsPayload<ExtArgs> | null
+    loyaltyCard: Prisma.$LoyaltyCardPayload<ExtArgs> | null
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     fcmTokens: Prisma.$DeviceTokenPayload<ExtArgs>[]
     articleComments: Prisma.$ArticleCommentPayload<ExtArgs>[]
@@ -1464,6 +1674,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     email: string
     pendingNewEmail: string | null
     password: string
+    isVerified: boolean
     isEmailVerified: boolean
     isTotpEnabled: boolean
     totpSecret: string | null
@@ -1870,6 +2081,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   tokens<T extends Prisma.User$tokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notificationsSettings<T extends Prisma.User$notificationsSettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsSettingsArgs<ExtArgs>>): Prisma.Prisma__NotificationsSettingsClient<runtime.Types.Result.GetResult<Prisma.$NotificationsSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  loyaltyCard<T extends Prisma.User$loyaltyCardArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$loyaltyCardArgs<ExtArgs>>): Prisma.Prisma__LoyaltyCardClient<runtime.Types.Result.GetResult<Prisma.$LoyaltyCardPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   fcmTokens<T extends Prisma.User$fcmTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$fcmTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeviceTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   articleComments<T extends Prisma.User$articleCommentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$articleCommentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArticleCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1907,6 +2119,7 @@ export interface UserFieldRefs {
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly pendingNewEmail: Prisma.FieldRef<"User", 'String'>
   readonly password: Prisma.FieldRef<"User", 'String'>
+  readonly isVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly isEmailVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly isTotpEnabled: Prisma.FieldRef<"User", 'Boolean'>
   readonly totpSecret: Prisma.FieldRef<"User", 'String'>
@@ -2373,6 +2586,25 @@ export type User$notificationsSettingsArgs<ExtArgs extends runtime.Types.Extensi
    */
   include?: Prisma.NotificationsSettingsInclude<ExtArgs> | null
   where?: Prisma.NotificationsSettingsWhereInput
+}
+
+/**
+ * User.loyaltyCard
+ */
+export type User$loyaltyCardArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LoyaltyCard
+   */
+  select?: Prisma.LoyaltyCardSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LoyaltyCard
+   */
+  omit?: Prisma.LoyaltyCardOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyCardInclude<ExtArgs> | null
+  where?: Prisma.LoyaltyCardWhereInput
 }
 
 /**

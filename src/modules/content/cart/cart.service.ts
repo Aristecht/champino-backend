@@ -12,7 +12,12 @@ export class CartService {
   constructor(private readonly prismaService: PrismaService) {}
 
   private readonly productInclude = {
-    select: { id: true, name: true, price: true, images: true },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      medias: { select: { url: true } },
+    },
   };
 
   private buildCartResponse(cart: {
@@ -32,12 +37,18 @@ export class CartService {
         id: string;
         name: string | null;
         price: any;
-        images: string[];
+        medias: Array<{ url: string }>;
       };
     }>;
   }) {
     const items = cart.items.map(item => ({
       ...item,
+      product: item.product
+        ? {
+            ...item.product,
+            images: item.product.medias.map(media => media.url),
+          }
+        : item.product,
       subtotal: item.product?.price
         ? Number(item.product.price) * item.quantity
         : 0,

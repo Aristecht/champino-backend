@@ -33,7 +33,7 @@ export class BranchResolver {
     return this.branchService.create(input);
   }
 
-  @Authorization(Role.ADMIN)
+  @Authorization(Role.ADMIN, Role.MANAGER)
   @Mutation(() => BranchModel, { name: 'adminUpdateBranch' })
   adminUpdateBranch(
     @Args('id') id: string,
@@ -42,7 +42,7 @@ export class BranchResolver {
     return this.branchService.update(id, input);
   }
 
-  @Authorization(Role.ADMIN)
+  @Authorization(Role.ADMIN, Role.MANAGER)
   @Mutation(() => Boolean, { name: 'adminDeleteBranch' })
   adminDeleteBranch(@Args('id') id: string) {
     return this.branchService.remove(id);

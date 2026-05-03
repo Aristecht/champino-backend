@@ -82,11 +82,12 @@ export type PaymentsStatus = (typeof PaymentsStatus)[keyof typeof PaymentsStatus
 
 
 export const OrderStatus = {
-  PENDING: 'PENDING',
-  PAID: 'PAID',
   PROCESSING: 'PROCESSING',
-  SHIPPED: 'SHIPPED',
+  ASSEMBLING: 'ASSEMBLING',
+  READY_FOR_PICKUP: 'READY_FOR_PICKUP',
+  IN_TRANSIT: 'IN_TRANSIT',
   DELIVERED: 'DELIVERED',
+  COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
   REFUNDED: 'REFUNDED'
 } as const

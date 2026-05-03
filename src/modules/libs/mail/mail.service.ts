@@ -19,16 +19,12 @@ export class MailService {
   async sendVerificationToken(email: string, token: string) {
     const domain = this.configService.getOrThrow<string>('ALLOWED_ORIGIN');
     const html = await render(verificationTemplate({ domain, token }));
-    return this.sendMail(email, 'Portfolio-Hub: Верификация аккаунта', html);
+    return this.sendMail(email, 'Чампино: Подтверждение аккаунта', html);
   }
   async sendVerificationNewEmailToken(email: string, token: string) {
     const domain = this.configService.getOrThrow<string>('ALLOWED_ORIGIN');
     const html = await render(verificationNewEmailTemplate({ domain, token }));
-    return this.sendMail(
-      email,
-      'Portfolio-Hub: Подтверждение адреса электронной почты',
-      html,
-    );
+    return this.sendMail(email, 'Чампино: Подтверждение новой почты', html);
   }
 
   async sendPasswordResetToken(
@@ -40,7 +36,7 @@ export class MailService {
     const html = await render(
       PasswordResetTemplate({ domain, token, metadata }),
     );
-    return this.sendMail(email, 'Portfolio-Hub: Сброс пароля', html);
+    return this.sendMail(email, 'Чампино: Сброс пароля', html);
   }
 
   async sendDeactivateToken(
@@ -49,13 +45,13 @@ export class MailService {
     metadata: SessionMetadata,
   ) {
     const html = await render(DeactiavteTemplate({ token, metadata }));
-    return this.sendMail(email, 'Portfolio-Hub: Деактивация аккаунта', html);
+    return this.sendMail(email, 'Чампино: Деактивация аккаунта', html);
   }
 
   async sendAccountDeletion(email: string) {
     const domain = this.configService.getOrThrow<string>('ALLOWED_ORIGIN');
     const html = await render(AccountDeletionTemplate({ domain }));
-    return this.sendMail(email, 'Portfolio-Hub: Аккаунт удален', html);
+    return this.sendMail(email, 'Чампино: Аккаунт удален', html);
   }
 
   private sendMail(email: string, subject: string, html: string) {

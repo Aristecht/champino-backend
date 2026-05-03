@@ -1,10 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../core/prisma/prisma.service';
 import { HalykService } from '../payment/halyk.service';
-import {
-  OrderStatus,
-  PaymentsStatus,
-} from '../../../../prisma/generated/prisma/enums';
+import { PaymentsStatus } from '../../../../prisma/generated/prisma/enums';
 
 @Injectable()
 export class WebhookService {
@@ -40,22 +37,18 @@ export class WebhookService {
     }
 
     if (Status === 'PAID') {
-      await this.prismaService.$transaction([
-        this.prismaService.payment.update({
-          where: { id: payment.id },
-          data: {
-            status: PaymentsStatus.SUCCEEDED,
-            kaspiPaymentId: TransactionId,
-            paidAt: new Date(),
-            rawResponse: body as any,
-          },
-        }),
-        this.prismaService.order.update({
-          where: { id: payment.orderId },
-          data: { status: OrderStatus.PAID },
-        }),
-      ]);
-      this.logger.log(`Kaspi: order ${payment.orderId} marked PAID`);
+      await this.prismaService.payment.update({
+        where: { id: payment.id },
+        data: {
+          status: PaymentsStatus.SUCCEEDED,
+          kaspiPaymentId: TransactionId,
+          paidAt: new Date(),
+          rawResponse: body as any,
+        },
+      });
+      this.logger.log(
+        `Kaspi: payment for order ${payment.orderId} marked SUCCEEDED`,
+      );
     } else if (['FAILED', 'EXPIRED', 'CANCELLED'].includes(Status)) {
       await this.prismaService.payment.update({
         where: { id: payment.id },
@@ -102,24 +95,20 @@ export class WebhookService {
     const halykStatus: string = body.status ?? '';
 
     if (halykStatus === 'PAID') {
-      await this.prismaService.$transaction([
-        this.prismaService.payment.update({
-          where: { id: payment.id },
-          data: {
-            status: PaymentsStatus.SUCCEEDED,
-            halykRrn: body.rrn,
-            halykApprovalCode: body.approvalCode,
-            halykTerminalId: body.terminal,
-            paidAt: new Date(),
-            rawResponse: body,
-          },
-        }),
-        this.prismaService.order.update({
-          where: { id: payment.orderId },
-          data: { status: OrderStatus.PAID },
-        }),
-      ]);
-      this.logger.log(`Halyk: order ${payment.orderId} marked PAID`);
+      await this.prismaService.payment.update({
+        where: { id: payment.id },
+        data: {
+          status: PaymentsStatus.SUCCEEDED,
+          halykRrn: body.rrn,
+          halykApprovalCode: body.approvalCode,
+          halykTerminalId: body.terminal,
+          paidAt: new Date(),
+          rawResponse: body,
+        },
+      });
+      this.logger.log(
+        `Halyk: payment for order ${payment.orderId} marked SUCCEEDED`,
+      );
     } else if (['FAILED', 'EXPIRED', 'CANCELLED'].includes(halykStatus)) {
       await this.prismaService.payment.update({
         where: { id: payment.id },

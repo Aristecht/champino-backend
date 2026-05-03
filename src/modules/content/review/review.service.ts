@@ -8,7 +8,7 @@ import { PrismaService } from '../../../core/prisma/prisma.service';
 import { NotificationsService } from '../../notifications/notifications.service';
 import { CreateReviewInput } from './inputs/create-review.input';
 import { UpdateReviewInput } from './inputs/update-review.input';
-import { Role } from '../../../../prisma/generated/prisma/enums';
+import { OrderStatus, Role } from '../../../../prisma/generated/prisma/enums';
 
 @Injectable()
 export class ReviewService {
@@ -17,17 +17,35 @@ export class ReviewService {
     private readonly notificationsService: NotificationsService,
   ) {}
 
-  async getProductReviews(productId: string) {
-    const reviews = await this.prismaService.review.findMany({
-      where: { productId },
-      orderBy: { createdAt: 'desc' },
-    });
+  async getProductReviews(productId: string, page = 1, limit = 10) {
+    const normalizedPage = Math.max(1, page);
+    const normalizedLimit = Math.max(1, Math.min(limit, 100));
 
-    const total = reviews.length;
-    const avgRating =
-      total > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / total : 0;
+    const [reviews, total, ratingAgg] = await this.prismaService.$transaction([
+      this.prismaService.review.findMany({
+        where: { productId },
+        orderBy: { createdAt: 'desc' },
+        skip: (normalizedPage - 1) * normalizedLimit,
+        take: normalizedLimit,
+      }),
+      this.prismaService.review.count({
+        where: { productId },
+      }),
+      this.prismaService.review.aggregate({
+        where: { productId },
+        _avg: { rating: true },
+      }),
+    ]);
 
-    return { data: reviews, total, avgRating };
+    const avgRating = total > 0 ? Number(ratingAgg._avg.rating ?? 0) : 0;
+
+    return {
+      data: reviews,
+      total,
+      avgRating,
+      page: normalizedPage,
+      limit: normalizedLimit,
+    };
   }
 
   async createReview(userId: string, input: CreateReviewInput) {
@@ -50,7 +68,16 @@ export class ReviewService {
         productId: input.productId,
         order: {
           userId,
-          status: { in: ['DELIVERED', 'PAID', 'PROCESSING', 'SHIPPED'] },
+          status: {
+            in: [
+              OrderStatus.PROCESSING,
+              OrderStatus.ASSEMBLING,
+              OrderStatus.READY_FOR_PICKUP,
+              OrderStatus.IN_TRANSIT,
+              OrderStatus.DELIVERED,
+              OrderStatus.COMPLETED,
+            ],
+          },
         },
       },
     });

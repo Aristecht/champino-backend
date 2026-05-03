@@ -71,7 +71,9 @@ export const ModelName = {
   Notifications: 'Notifications',
   DeviceToken: 'DeviceToken',
   NotificationsSettings: 'NotificationsSettings',
-  Token: 'Token'
+  Token: 'Token',
+  LoyaltyCard: 'LoyaltyCard',
+  LoyaltyAccrualOperation: 'LoyaltyAccrualOperation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -96,6 +98,7 @@ export const UserScalarFieldEnum = {
   email: 'email',
   pendingNewEmail: 'pendingNewEmail',
   password: 'password',
+  isVerified: 'isVerified',
   isEmailVerified: 'isEmailVerified',
   isTotpEnabled: 'isTotpEnabled',
   totpSecret: 'totpSecret',
@@ -144,7 +147,6 @@ export const ProductScalarFieldEnum = {
   stock: 'stock',
   isPublished: 'isPublished',
   isDraft: 'isDraft',
-  images: 'images',
   categoryId: 'categoryId',
   attributes: 'attributes',
   discountPercent: 'discountPercent',
@@ -215,6 +217,7 @@ export const OrderScalarFieldEnum = {
   userId: 'userId',
   status: 'status',
   totalAmount: 'totalAmount',
+  discountAmount: 'discountAmount',
   note: 'note',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -409,6 +412,29 @@ export const TokenScalarFieldEnum = {
 } as const
 
 export type TokenScalarFieldEnum = (typeof TokenScalarFieldEnum)[keyof typeof TokenScalarFieldEnum]
+
+
+export const LoyaltyCardScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  totalOrders: 'totalOrders',
+  discountPct: 'discountPct',
+  qrToken: 'qrToken',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LoyaltyCardScalarFieldEnum = (typeof LoyaltyCardScalarFieldEnum)[keyof typeof LoyaltyCardScalarFieldEnum]
+
+
+export const LoyaltyAccrualOperationScalarFieldEnum = {
+  id: 'id',
+  operationId: 'operationId',
+  loyaltyCardId: 'loyaltyCardId',
+  createdAt: 'createdAt'
+} as const
+
+export type LoyaltyAccrualOperationScalarFieldEnum = (typeof LoyaltyAccrualOperationScalarFieldEnum)[keyof typeof LoyaltyAccrualOperationScalarFieldEnum]
 
 
 export const SortOrder = {

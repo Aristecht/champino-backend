@@ -1,4 +1,11 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { AccountService } from './account.service';
 import { UserModel } from './models/user.model';
 import { CreateUserInput } from './inputs/create-user.input';
@@ -10,12 +17,26 @@ import { ChangeEmailInput } from './inputs/change-email.input';
 import { ChangePasswordInput } from './inputs/change-password.input';
 import { NewEmailInput } from './inputs/new-email.input';
 import { registerEnumType } from '@nestjs/graphql';
+import { NotificationSettingsModel } from '../../notifications/models/notifications-settings.model';
 
 registerEnumType(Role, { name: 'Role' });
 
-@Resolver('accounts')
+@Resolver(() => UserModel)
 export class AccountResolver {
   constructor(private readonly accountService: AccountService) {}
+
+  @ResolveField(() => NotificationSettingsModel)
+  async notificationsSettings(@Parent() user: UserModel) {
+    const existingSettings = await this.accountService.findNotificationSettings(
+      user.id,
+    );
+
+    if (existingSettings) {
+      return existingSettings;
+    }
+
+    return this.accountService.createDefaultNotificationSettings(user.id);
+  }
 
   @Authorization()
   @Query(() => [UserModel], { name: 'findAllUser' })

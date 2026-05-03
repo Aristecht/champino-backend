@@ -31,6 +31,7 @@ import { AddressModule } from '../modules/content/address/address.module';
 import { BranchModule } from '../modules/content/branch/branch.module';
 import { AnalyticsModule } from '../modules/content/analytics/analytics.module';
 import { NewsModule } from '../modules/content/news/news.module';
+import { LoyaltyModule } from '../modules/loyalty/loyalty.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { NewsModule } from '../modules/content/news/news.module';
     BranchModule,
     AnalyticsModule,
     NewsModule,
+    LoyaltyModule,
   ],
 })
 export class CoreModule {}

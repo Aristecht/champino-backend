@@ -1,43 +1,33 @@
-import * as React from 'react'
-import { Html } from "@react-email/html"
-import { Body, Head, Heading, Link, Preview, Section, Tailwind, Text } from "@react-email/components"
+import * as React from 'react';
+import { Link, Section, Text } from '@react-email/components';
+import { BaseEmailTemplate } from './base-email.template';
 
 interface VerificationTemplateProps {
-    domain: string
-    token: string
+    domain: string;
+    token: string;
 }
 
 export function verificationTemplate({ domain, token }: VerificationTemplateProps) {
-    const verificationLink = `${domain}/account/verify?token=${token}`
+    const verificationLink = `${domain}/account/verify?token=${token}`;
 
     return (
-        <Html>
-            <Head />
-            <Preview>Portfolio-Hub: Верификация аккаунта</Preview>
-            <Tailwind>
-                <Body className='max-w-2xl mx-auto p-6 bg-slate-50'>
-                    <Section className='text-center mb-8'>
-                        <Heading className='text-3xl text-black font-bold'>Подтверждение вашей почты</Heading>
-                        <Text className='text-base text-black'>
-                            Спасибо за регистрацию в Portfolio-Hub!
-                            Чтобы подтвердить свой адрес электронной почты, пожалуйста,
-                            перейдите по следующей ссылке: 
-                        </Text>
-                        <Link href={verificationLink} className='inline-flex justify-center items-center rounded-full text-sm font-medium text-white bg-[#18B9AE] px-5 py-2'>
-                            Подтвердить почту
-                        </Link>
-                    </Section>
-                    <Section className='text-center'>
-                        <Text className='text-gray-600'>
-                            Если у вас есть вопросы или вы столкнулись с
-                            трудностями, не стесняйтесь в нашу службу поддержки по адресу {' '}
-                            <Link href='mailto:aristiktop8@gmail.com' className='text-[#18B9AE] underline'>
-                                aristiktop8@gmail.com
-                            </Link>
-                        </Text>
-                    </Section>
-                </Body>
-            </Tailwind>
-        </Html>
-    )
+        <BaseEmailTemplate
+            preview="Champino: подтверждение почты"
+            eyebrow="CHAMPINO ACCOUNT"
+            heading="Подтвердите вашу почту"
+            intro="Спасибо за регистрацию в CHAMPINO ZOO. Чтобы активировать аккаунт, подтвердите адрес электронной почты по кнопке ниже."
+        >
+            <Section className="mt-7 text-center">
+                <Link
+                    href={verificationLink}
+                    className="inline-block rounded-xl bg-[#ef2433] px-6 py-3 text-sm font-semibold text-white no-underline"
+                >
+                    Подтвердить почту
+                </Link>
+            </Section>
+            <Text className="mx-auto mt-4 mb-0 max-w-xl text-center text-[13px] leading-6 text-[#6f6067]">
+                Если вы не создавали аккаунт, просто проигнорируйте это письмо.
+            </Text>
+        </BaseEmailTemplate>
+    );
 }

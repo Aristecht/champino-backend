@@ -58,9 +58,6 @@ export class ProductModel {
   @Field()
   isDraft: boolean;
 
-  @Field(() => [String])
-  images: string[];
-
   @Field(() => String, { nullable: true })
   categoryId?: string;
 
@@ -73,7 +70,10 @@ export class ProductModel {
   @Field(() => GraphQLJSON, { nullable: true })
   attributes?: Record<string, unknown>;
 
-  @Field(() => Int, { nullable: true, description: 'Скидка в процентах (0–100)' })
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Скидка в процентах (0–100)',
+  })
   discountPercent?: number;
 
   @Field(() => Float, { nullable: true, description: 'Цена после скидки' })

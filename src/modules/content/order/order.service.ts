@@ -7,6 +7,7 @@ import { PrismaService } from '../../../core/prisma/prisma.service';
 import { KaspiService } from '../payment/kaspi.service';
 import { HalykService } from '../payment/halyk.service';
 import { NotificationsService } from '../../notifications/notifications.service';
+import { LoyaltyService } from '../../loyalty/loyalty.service';
 import { CreateOrderInput } from './inputs/create-order.input';
 import { FilterOrderInput } from './inputs/filter-order.input';
 import { UpdateOrderStatusInput } from './inputs/update-order-status.input';
@@ -20,7 +21,7 @@ import {
 const ORDER_INCLUDE = {
   items: {
     include: {
-      product: { select: { id: true, name: true, images: true } },
+      product: { select: { id: true, name: true, medias: true } },
     },
   },
   shipping: true,
@@ -31,9 +32,18 @@ function mapOrder(order: any) {
   return {
     ...order,
     totalAmount: Number(order.totalAmount),
-    discountAmount: order.discountAmount ? Number(order.discountAmount) : null,
+    discountAmount:
+      order.discountAmount === null || order.discountAmount === undefined
+        ? null
+        : Number(order.discountAmount),
     items: order.items.map((item: any) => ({
       ...item,
+      product: item.product
+        ? {
+            ...item.product,
+            images: (item.product.medias ?? []).map((media: any) => media.url),
+          }
+        : null,
       priceAtOrder: Number(item.priceAtOrder),
       subtotal: Number(item.priceAtOrder) * item.quantity,
     })),
@@ -53,6 +63,7 @@ export class OrderService {
     private readonly kaspiService: KaspiService,
     private readonly halykService: HalykService,
     private readonly notificationsService: NotificationsService,
+    private readonly loyaltyService: LoyaltyService,
   ) {}
 
   // ─── USER ─────────────────────────────────────────────────────────────────
@@ -97,6 +108,7 @@ export class OrderService {
               select: {
                 id: true,
                 price: true,
+                discountPercent: true,
                 stock: true,
                 isPublished: true,
                 name: true,
@@ -146,14 +158,33 @@ export class OrderService {
       }
     }
 
-    const subtotal = cart.items.reduce((sum, item) => {
-      const price = item.variant?.price
+    const pricedItems = cart.items.map(item => {
+      const baseUnitPrice = item.variant?.price
         ? Number(item.variant.price)
         : Number(item.product.price);
-      return sum + price * item.quantity;
-    }, 0);
+      const discountPercent = item.product.discountPercent ?? 0;
+      const discountedUnitPrice = +(
+        baseUnitPrice *
+        (1 - discountPercent / 100)
+      ).toFixed(2);
+      return {
+        ...item,
+        unitPriceAtOrder: discountedUnitPrice,
+        baseLineTotal: baseUnitPrice * item.quantity,
+        discountedLineTotal: discountedUnitPrice * item.quantity,
+      };
+    });
 
-    const totalAmount = subtotal;
+    const baseSubtotal = pricedItems.reduce(
+      (sum, item) => sum + item.baseLineTotal,
+      0,
+    );
+    const subtotal = pricedItems.reduce(
+      (sum, item) => sum + item.discountedLineTotal,
+      0,
+    );
+    const totalAmount = +subtotal.toFixed(2);
+    const discountAmount = +(baseSubtotal - subtotal).toFixed(2);
 
     const order = await this.prismaService.$transaction(async tx => {
       for (const item of cart.items) {
@@ -175,21 +206,19 @@ export class OrderService {
           userId,
           totalAmount,
           note,
-          status: OrderStatus.PENDING,
+          status: OrderStatus.PROCESSING,
           items: {
-            create: cart.items.map(item => {
-              const price = item.variant?.price
-                ? Number(item.variant.price)
-                : Number(item.product.price);
+            create: pricedItems.map(item => {
               return {
                 productId: item.productId,
                 variantId: item.variantId ?? undefined,
                 variantName: item.variant?.name ?? undefined,
                 quantity: item.quantity,
-                priceAtOrder: price,
+                priceAtOrder: item.unitPriceAtOrder,
               };
             }),
           },
+          discountAmount,
           shipping: {
             create: {
               fullName: shipping.fullName,
@@ -229,6 +258,9 @@ export class OrderService {
     // Fire-and-forget — don't block the response
     this.notificationsService
       .notifyOrderPlaced(userId, order.id)
+      .catch(() => {});
+    this.notificationsService
+      .notifyAdminsAboutNewOrder(order.id, userId)
       .catch(() => {});
     return mapped;
   }
@@ -325,21 +357,15 @@ export class OrderService {
       );
 
       if (result.paid) {
-        await this.prismaService.$transaction([
-          this.prismaService.payment.update({
-            where: { id: payment.id },
-            data: {
-              status: PaymentsStatus.SUCCEEDED,
-              kaspiPaymentId: result.kaspiPaymentId,
-              paidAt: new Date(),
-              rawResponse: result.raw,
-            },
-          }),
-          this.prismaService.order.update({
-            where: { id: order.id },
-            data: { status: OrderStatus.PAID },
-          }),
-        ]);
+        await this.prismaService.payment.update({
+          where: { id: payment.id },
+          data: {
+            status: PaymentsStatus.SUCCEEDED,
+            kaspiPaymentId: result.kaspiPaymentId,
+            paidAt: new Date(),
+            rawResponse: result.raw,
+          },
+        });
       }
 
       return result.paid;
@@ -354,23 +380,17 @@ export class OrderService {
       );
 
       if (result.paid) {
-        await this.prismaService.$transaction([
-          this.prismaService.payment.update({
-            where: { id: payment.id },
-            data: {
-              status: PaymentsStatus.SUCCEEDED,
-              halykRrn: result.rrn,
-              halykApprovalCode: result.approvalCode,
-              halykTerminalId: result.terminalId,
-              paidAt: new Date(),
-              rawResponse: result.raw,
-            },
-          }),
-          this.prismaService.order.update({
-            where: { id: order.id },
-            data: { status: OrderStatus.PAID },
-          }),
-        ]);
+        await this.prismaService.payment.update({
+          where: { id: payment.id },
+          data: {
+            status: PaymentsStatus.SUCCEEDED,
+            halykRrn: result.rrn,
+            halykApprovalCode: result.approvalCode,
+            halykTerminalId: result.terminalId,
+            paidAt: new Date(),
+            rawResponse: result.raw,
+          },
+        });
       }
 
       return result.paid;
@@ -414,7 +434,11 @@ export class OrderService {
     });
     if (!order) throw new NotFoundException('Заказ не найден');
 
-    const cancellable: OrderStatus[] = [OrderStatus.PENDING, OrderStatus.PAID];
+    const cancellable: OrderStatus[] = [
+      OrderStatus.PROCESSING,
+      OrderStatus.ASSEMBLING,
+      OrderStatus.READY_FOR_PICKUP,
+    ];
     if (!cancellable.includes(order.status)) {
       throw new BadRequestException('Заказ нельзя отменить на данном этапе');
     }
@@ -480,18 +504,69 @@ export class OrderService {
   async adminUpdateOrderStatus(orderId: string, input: UpdateOrderStatusInput) {
     const order = await this.prismaService.order.findUnique({
       where: { id: orderId },
+      include: { shipping: true, payment: true },
     });
     if (!order) throw new NotFoundException('Заказ не найден');
 
+    if (!order.shipping) {
+      throw new BadRequestException('Для заказа не указаны данные доставки');
+    }
+
+    const next = input.status;
+    const current = order.status;
+    const isPickup = order.shipping.deliveryType === DeliveryType.PICKUP;
+
+    const pickupFlow: Record<OrderStatus, OrderStatus[]> = {
+      [OrderStatus.PROCESSING]: [OrderStatus.ASSEMBLING, OrderStatus.CANCELLED],
+      [OrderStatus.ASSEMBLING]: [
+        OrderStatus.READY_FOR_PICKUP,
+        OrderStatus.CANCELLED,
+      ],
+      [OrderStatus.READY_FOR_PICKUP]: [
+        OrderStatus.COMPLETED,
+        OrderStatus.CANCELLED,
+      ],
+      [OrderStatus.COMPLETED]: [],
+      [OrderStatus.DELIVERED]: [],
+      [OrderStatus.IN_TRANSIT]: [],
+      [OrderStatus.CANCELLED]: [],
+      [OrderStatus.REFUNDED]: [],
+    };
+
+    const courierFlow: Record<OrderStatus, OrderStatus[]> = {
+      [OrderStatus.PROCESSING]: [OrderStatus.ASSEMBLING, OrderStatus.CANCELLED],
+      [OrderStatus.ASSEMBLING]: [OrderStatus.IN_TRANSIT, OrderStatus.CANCELLED],
+      [OrderStatus.IN_TRANSIT]: [OrderStatus.DELIVERED, OrderStatus.CANCELLED],
+      [OrderStatus.DELIVERED]: [],
+      [OrderStatus.COMPLETED]: [],
+      [OrderStatus.READY_FOR_PICKUP]: [],
+      [OrderStatus.CANCELLED]: [],
+      [OrderStatus.REFUNDED]: [],
+    };
+
+    const allowed = (isPickup ? pickupFlow : courierFlow)[current] ?? [];
+    if (!allowed.includes(next)) {
+      throw new BadRequestException(
+        `Недопустимый переход статуса ${current} -> ${next} для ${isPickup ? 'самовывоза' : 'курьерской доставки'}`,
+      );
+    }
+
     const updated = await this.prismaService.order.update({
       where: { id: orderId },
-      data: { status: input.status },
+      data: { status: next },
       include: ORDER_INCLUDE,
     });
 
     this.notificationsService
       .notifyOrderStatusChanged(order.userId, orderId, input.status)
       .catch(() => {});
+
+    if (
+      (next === OrderStatus.COMPLETED || next === OrderStatus.DELIVERED) &&
+      order.payment?.status === PaymentsStatus.SUCCEEDED
+    ) {
+      this.loyaltyService.incrementOrderCount(order.userId).catch(() => {});
+    }
 
     return mapOrder(updated);
   }
@@ -561,10 +636,17 @@ export class OrderService {
       baseAmount *
       (1 - discountPercent / 100)
     ).toFixed(2);
+    const addedDiscountAmount = +(baseAmount - discountedAmount).toFixed(2);
+    const currentDiscountAmount = Number(order.discountAmount ?? 0);
 
     const updated = await this.prismaService.order.update({
       where: { id: orderId },
-      data: { totalAmount: discountedAmount },
+      data: {
+        totalAmount: discountedAmount,
+        discountAmount: +(currentDiscountAmount + addedDiscountAmount).toFixed(
+          2,
+        ),
+      },
       include: ORDER_INCLUDE,
     });
 
