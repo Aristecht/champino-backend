@@ -17,7 +17,6 @@ import {
   destroySession,
   saveSession,
 } from '../../../shared/utils/session.util';
-import { VerificationService } from '../verification/verification.service';
 import { TOTP } from 'otpauth';
 
 @Injectable()
@@ -26,7 +25,6 @@ export class SessionService {
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService,
     private readonly redisService: RedisService,
-    private readonly verificationService: VerificationService,
   ) {}
 
   async findByUser(req: Request) {
@@ -111,15 +109,6 @@ export class SessionService {
       throw new UnauthorizedException('Неверный пароль');
     }
 
-    let notVerifiedMessage: string | undefined;
-
-    if (!user.isEmailVerified) {
-      await this.verificationService.sendVerificationToken(user);
-      notVerifiedMessage =
-        'Пожалуйста, подтвердите свою почту. Мы отправили письмо с подтверждением на ' +
-        user.email;
-    }
-
     if (user.isTotpEnabled) {
       if (!user.totpSecret) {
         throw new InternalServerErrorException(
@@ -152,7 +141,7 @@ export class SessionService {
 
     return {
       user: saveSession(req, user, metadata),
-      message: notVerifiedMessage,
+      message: null,
     };
   }
 
