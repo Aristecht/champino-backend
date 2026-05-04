@@ -30,8 +30,7 @@ FROM base AS runtime
 
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn .yarn
-
-RUN yarn install --immutable --mode=skip-build
+COPY --from=build /app/node_modules ./node_modules
 
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
