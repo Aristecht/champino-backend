@@ -23,9 +23,7 @@ async function bootstrap() {
   const apiPrefix = config.get<string>('API_PREFIX')?.replace(/^\/+|\/+$/g, '');
 
   if (apiPrefix) {
-    app.setGlobalPrefix(apiPrefix, {
-      exclude: ['oauth/(.*)', 'oauth/google', 'oauth/google/callback'],
-    });
+    app.setGlobalPrefix(apiPrefix);
   }
 
   app.use(cookieParser(config.getOrThrow<string>('COOKIE_SECRET')));
