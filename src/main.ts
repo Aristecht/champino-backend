@@ -58,6 +58,15 @@ async function bootstrap() {
     credentials: true,
     exposedHeaders: ['Set-Cookie'],
   });
+
+  console.log('[bootstrap] runtime config', {
+    nodeEnv: config.get<string>('NODE_ENV'),
+    apiPrefix: apiPrefix || '',
+    allowedOrigin: config.get<string>('ALLOWED_ORIGIN'),
+    applicationUrl: config.get<string>('APPLICATION_URL'),
+    googleCallbackUrl: config.get<string>('GOOGLE_CALLBACK_URL'),
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
