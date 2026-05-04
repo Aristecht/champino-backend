@@ -20,6 +20,11 @@ async function bootstrap() {
 
   const config = app.get(ConfigService);
   const redis = app.get(RedisService);
+  const apiPrefix = config.get<string>('API_PREFIX')?.replace(/^\/+|\/+$/g, '');
+
+  if (apiPrefix) {
+    app.setGlobalPrefix(apiPrefix);
+  }
 
   app.use(cookieParser(config.getOrThrow<string>('COOKIE_SECRET')));
   app.getHttpAdapter().getInstance().set('trust proxy', 1);
