@@ -36,7 +36,7 @@ import { LoyaltyModule } from '../modules/loyalty/loyalty.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      ignoreEnvFile: !IS_DEV_ENV,
+      ignoreEnvFile: process.env.NODE_ENV === 'production',
       isGlobal: true,
     }),
     ThrottlerModule.forRoot([
