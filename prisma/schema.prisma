@@ -57,8 +57,8 @@ model Account {
 
 model Category {
   id          String     @id @default(uuid())
-  name        String     @unique
-  slug        String     @unique
+  name        String
+  slug        String
   description String?
   imageUrl    String?    @map("image_url")
   parentId    String?    @map("parent_id")

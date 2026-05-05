@@ -128,8 +128,14 @@ export class CategoryService {
     const slug = input.slug ? input.slug : toSlug(name);
 
     const existing = await this.prismaService.category.findFirst({
-      where: { OR: [{ name }, { slug }] },
+      where: { OR: [{ name }, { slug }], parentId: parentId ?? null },
     });
+
+    if (existing) {
+      throw new ConflictException(
+        'Категория с таким названием или slug уже существует',
+      );
+    }
 
     if (parentId) {
       const parent = await this.prismaService.category.findUnique({
@@ -177,6 +183,16 @@ export class CategoryService {
   ) {
     const { name, parentId } = input;
     const slug = input.slug ? input.slug : toSlug(name);
+
+    const existing = await this.prismaService.category.findFirst({
+      where: { OR: [{ name }, { slug }], parentId: parentId ?? null },
+    });
+
+    if (existing) {
+      throw new ConflictException(
+        'Категория с таким названием или slug уже существует',
+      );
+    }
 
     if (parentId) {
       const parent = await this.prismaService.category.findUnique({
