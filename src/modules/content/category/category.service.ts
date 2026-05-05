@@ -107,7 +107,7 @@ export class CategoryService {
   }
 
   async findBySlug(slug: string) {
-    const category = await this.prismaService.category.findUnique({
+    const category = await this.prismaService.category.findFirst({
       where: { slug },
       include: {
         children: {
