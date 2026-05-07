@@ -21,7 +21,7 @@ export class LoyaltyService {
   constructor(private readonly prismaService: PrismaService) {}
 
   private buildQrUrl(qrToken: string): string {
-    const base = process.env.APP_URL ?? 'https://champino.kz';
+    const base = process.env.APPLICATION_URL ?? 'https://champino.org';
     return `${base}/loyalty/${qrToken}`;
   }
 
