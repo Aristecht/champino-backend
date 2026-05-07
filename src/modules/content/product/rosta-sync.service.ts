@@ -39,6 +39,10 @@ export class RostaSyncService {
   private readonly logger = new Logger(RostaSyncService.name);
   private readonly http: AxiosInstance;
 
+  private isSyncEnabled(): boolean {
+    return process.env.ROSTA_SYNC_ENABLED === 'true';
+  }
+
   constructor(private readonly prisma: PrismaService) {
     const apiKey = process.env.ROSTA_API_KEY;
     const baseURL =
@@ -54,8 +58,6 @@ export class RostaSyncService {
       timeout: 30_000,
     });
   }
-
-  // ── helpers ──────────────────────────────────────────────────────────────────
 
   private slugify(text: string): string {
     return text
@@ -193,6 +195,10 @@ export class RostaSyncService {
     return rostaToDbId;
   }
   async syncAll(): Promise<void> {
+    if (!this.isSyncEnabled()) {
+      return;
+    }
+
     this.logger.log('ROSTA sync started');
     const t0 = Date.now();
 
@@ -205,6 +211,13 @@ export class RostaSyncService {
 
       this.logger.log(`ROSTA sync done in ${Date.now() - t0}ms`);
     } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        this.logger.warn(
+          'ROSTA sync skipped: invalid or not-yet-issued ROSTA_API_KEY (401)',
+        );
+        return;
+      }
+
       const message = err instanceof Error ? err.message : String(err);
       this.logger.error(`ROSTA sync failed: ${message}`);
     }

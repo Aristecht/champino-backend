@@ -37,7 +37,7 @@ COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/src/core/config ./src/core/config
 COPY --from=build /app/src/core/graphql ./src/core/graphql
 
-EXPOSE 4200
+EXPOSE 4000
 
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "dist/src/main.js"]
