@@ -54,7 +54,6 @@ export class RostaLoyaltyController {
       throw new NotFoundException('qrToken и operationId обязательны');
     }
 
-    // Support both raw UUID and full URL
     const token = qrToken.includes('/')
       ? qrToken.split('/').filter(Boolean).pop()!
       : qrToken;

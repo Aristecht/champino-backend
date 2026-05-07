@@ -54,6 +54,7 @@ export type ProductMinAggregateOutputType = {
   discountPercent: number | null
   avgRating: number | null
   reviewCount: number | null
+  rostaId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -70,6 +71,7 @@ export type ProductMaxAggregateOutputType = {
   discountPercent: number | null
   avgRating: number | null
   reviewCount: number | null
+  rostaId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -87,6 +89,7 @@ export type ProductCountAggregateOutputType = {
   discountPercent: number
   avgRating: number
   reviewCount: number
+  rostaId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -121,6 +124,7 @@ export type ProductMinAggregateInputType = {
   discountPercent?: true
   avgRating?: true
   reviewCount?: true
+  rostaId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -137,6 +141,7 @@ export type ProductMaxAggregateInputType = {
   discountPercent?: true
   avgRating?: true
   reviewCount?: true
+  rostaId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -154,6 +159,7 @@ export type ProductCountAggregateInputType = {
   discountPercent?: true
   avgRating?: true
   reviewCount?: true
+  rostaId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -258,6 +264,7 @@ export type ProductGroupByOutputType = {
   discountPercent: number | null
   avgRating: number
   reviewCount: number
+  rostaId: string | null
   createdAt: Date
   updatedAt: Date
   _count: ProductCountAggregateOutputType | null
@@ -298,6 +305,7 @@ export type ProductWhereInput = {
   discountPercent?: Prisma.IntNullableFilter<"Product"> | number | null
   avgRating?: Prisma.FloatFilter<"Product"> | number
   reviewCount?: Prisma.IntFilter<"Product"> | number
+  rostaId?: Prisma.StringNullableFilter<"Product"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
@@ -321,6 +329,7 @@ export type ProductOrderByWithRelationInput = {
   discountPercent?: Prisma.SortOrderInput | Prisma.SortOrder
   avgRating?: Prisma.SortOrder
   reviewCount?: Prisma.SortOrder
+  rostaId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   category?: Prisma.CategoryOrderByWithRelationInput
@@ -333,6 +342,7 @@ export type ProductOrderByWithRelationInput = {
 
 export type ProductWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  rostaId?: string
   AND?: Prisma.ProductWhereInput | Prisma.ProductWhereInput[]
   OR?: Prisma.ProductWhereInput[]
   NOT?: Prisma.ProductWhereInput | Prisma.ProductWhereInput[]
@@ -355,7 +365,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   variants?: Prisma.ProductVariantListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
   medias?: Prisma.MediaListRelationFilter
-}, "id">
+}, "id" | "rostaId">
 
 export type ProductOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -370,6 +380,7 @@ export type ProductOrderByWithAggregationInput = {
   discountPercent?: Prisma.SortOrderInput | Prisma.SortOrder
   avgRating?: Prisma.SortOrder
   reviewCount?: Prisma.SortOrder
+  rostaId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ProductCountOrderByAggregateInput
@@ -395,6 +406,7 @@ export type ProductScalarWhereWithAggregatesInput = {
   discountPercent?: Prisma.IntNullableWithAggregatesFilter<"Product"> | number | null
   avgRating?: Prisma.FloatWithAggregatesFilter<"Product"> | number
   reviewCount?: Prisma.IntWithAggregatesFilter<"Product"> | number
+  rostaId?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
 }
@@ -411,6 +423,7 @@ export type ProductCreateInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
@@ -434,6 +447,7 @@ export type ProductUncheckedCreateInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
@@ -455,6 +469,7 @@ export type ProductUpdateInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
@@ -478,6 +493,7 @@ export type ProductUncheckedUpdateInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
@@ -500,6 +516,7 @@ export type ProductCreateManyInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -516,6 +533,7 @@ export type ProductUpdateManyMutationInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -533,6 +551,7 @@ export type ProductUncheckedUpdateManyInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -560,6 +579,7 @@ export type ProductCountOrderByAggregateInput = {
   discountPercent?: Prisma.SortOrder
   avgRating?: Prisma.SortOrder
   reviewCount?: Prisma.SortOrder
+  rostaId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -584,6 +604,7 @@ export type ProductMaxOrderByAggregateInput = {
   discountPercent?: Prisma.SortOrder
   avgRating?: Prisma.SortOrder
   reviewCount?: Prisma.SortOrder
+  rostaId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -600,6 +621,7 @@ export type ProductMinOrderByAggregateInput = {
   discountPercent?: Prisma.SortOrder
   avgRating?: Prisma.SortOrder
   reviewCount?: Prisma.SortOrder
+  rostaId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -773,6 +795,7 @@ export type ProductCreateWithoutCategoryInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
@@ -794,6 +817,7 @@ export type ProductUncheckedCreateWithoutCategoryInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
@@ -845,6 +869,7 @@ export type ProductScalarWhereInput = {
   discountPercent?: Prisma.IntNullableFilter<"Product"> | number | null
   avgRating?: Prisma.FloatFilter<"Product"> | number
   reviewCount?: Prisma.IntFilter<"Product"> | number
+  rostaId?: Prisma.StringNullableFilter<"Product"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
 }
@@ -861,6 +886,7 @@ export type ProductCreateWithoutCartItemsInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
@@ -883,6 +909,7 @@ export type ProductUncheckedCreateWithoutCartItemsInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
@@ -919,6 +946,7 @@ export type ProductUpdateWithoutCartItemsInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
@@ -941,6 +969,7 @@ export type ProductUncheckedUpdateWithoutCartItemsInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
@@ -961,6 +990,7 @@ export type ProductCreateWithoutOrderItemsInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
@@ -983,6 +1013,7 @@ export type ProductUncheckedCreateWithoutOrderItemsInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
@@ -1019,6 +1050,7 @@ export type ProductUpdateWithoutOrderItemsInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
@@ -1041,6 +1073,7 @@ export type ProductUncheckedUpdateWithoutOrderItemsInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
@@ -1061,6 +1094,7 @@ export type ProductCreateWithoutMediasInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
@@ -1083,6 +1117,7 @@ export type ProductUncheckedCreateWithoutMediasInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
@@ -1119,6 +1154,7 @@ export type ProductUpdateWithoutMediasInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
@@ -1141,6 +1177,7 @@ export type ProductUncheckedUpdateWithoutMediasInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
@@ -1161,6 +1198,7 @@ export type ProductCreateWithoutReviewsInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
@@ -1183,6 +1221,7 @@ export type ProductUncheckedCreateWithoutReviewsInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
@@ -1219,6 +1258,7 @@ export type ProductUpdateWithoutReviewsInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
@@ -1241,6 +1281,7 @@ export type ProductUncheckedUpdateWithoutReviewsInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
@@ -1261,6 +1302,7 @@ export type ProductCreateWithoutVariantsInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
@@ -1283,6 +1325,7 @@ export type ProductUncheckedCreateWithoutVariantsInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
@@ -1319,6 +1362,7 @@ export type ProductUpdateWithoutVariantsInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
@@ -1341,6 +1385,7 @@ export type ProductUncheckedUpdateWithoutVariantsInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
@@ -1361,6 +1406,7 @@ export type ProductCreateManyCategoryInput = {
   discountPercent?: number | null
   avgRating?: number
   reviewCount?: number
+  rostaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1377,6 +1423,7 @@ export type ProductUpdateWithoutCategoryInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
@@ -1398,6 +1445,7 @@ export type ProductUncheckedUpdateWithoutCategoryInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
@@ -1419,6 +1467,7 @@ export type ProductUncheckedUpdateManyWithoutCategoryInput = {
   discountPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avgRating?: Prisma.FloatFieldUpdateOperationsInput | number
   reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rostaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1503,6 +1552,7 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   discountPercent?: boolean
   avgRating?: boolean
   reviewCount?: boolean
+  rostaId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
@@ -1527,6 +1577,7 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   discountPercent?: boolean
   avgRating?: boolean
   reviewCount?: boolean
+  rostaId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
@@ -1545,6 +1596,7 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   discountPercent?: boolean
   avgRating?: boolean
   reviewCount?: boolean
+  rostaId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
@@ -1563,11 +1615,12 @@ export type ProductSelectScalar = {
   discountPercent?: boolean
   avgRating?: boolean
   reviewCount?: boolean
+  rostaId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "price" | "stock" | "isPublished" | "isDraft" | "categoryId" | "attributes" | "discountPercent" | "avgRating" | "reviewCount" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "price" | "stock" | "isPublished" | "isDraft" | "categoryId" | "attributes" | "discountPercent" | "avgRating" | "reviewCount" | "rostaId" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
   cartItems?: boolean | Prisma.Product$cartItemsArgs<ExtArgs>
@@ -1607,6 +1660,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     discountPercent: number | null
     avgRating: number
     reviewCount: number
+    rostaId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["product"]>
@@ -2050,6 +2104,7 @@ export interface ProductFieldRefs {
   readonly discountPercent: Prisma.FieldRef<"Product", 'Int'>
   readonly avgRating: Prisma.FieldRef<"Product", 'Float'>
   readonly reviewCount: Prisma.FieldRef<"Product", 'Int'>
+  readonly rostaId: Prisma.FieldRef<"Product", 'String'>
   readonly createdAt: Prisma.FieldRef<"Product", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Product", 'DateTime'>
 }

@@ -2207,6 +2207,7 @@ export const CategoryScalarFieldEnum = {
   description: 'description',
   imageUrl: 'imageUrl',
   parentId: 'parentId',
+  rostaId: 'rostaId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -2227,6 +2228,7 @@ export const ProductScalarFieldEnum = {
   discountPercent: 'discountPercent',
   avgRating: 'avgRating',
   reviewCount: 'reviewCount',
+  rostaId: 'rostaId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

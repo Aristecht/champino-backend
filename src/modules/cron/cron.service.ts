@@ -4,6 +4,7 @@ import { MailService } from '../libs/mail/mail.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { StorageService } from '../libs/storage/storage.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { RostaSyncService } from '../content/product/rosta-sync.service';
 
 @Injectable()
 export class CronService {
@@ -12,7 +13,13 @@ export class CronService {
     private readonly mailService: MailService,
     private readonly storageService: StorageService,
     private readonly notificationService: NotificationsService,
+    private readonly rostaSyncService: RostaSyncService,
   ) {}
+
+  @Cron(CronExpression.EVERY_HOUR)
+  async syncRostaProducts() {
+    await this.rostaSyncService.syncAll();
+  }
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async deleteDeactivatedAccount() {
