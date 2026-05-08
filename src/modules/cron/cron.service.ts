@@ -16,7 +16,7 @@ export class CronService {
     private readonly rostaSyncService: RostaSyncService,
   ) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async syncRostaProducts() {
     await this.rostaSyncService.syncAll();
   }

@@ -38,6 +38,7 @@ interface RostaPage<T> {
 export class RostaSyncService {
   private readonly logger = new Logger(RostaSyncService.name);
   private readonly http: AxiosInstance;
+  private isSyncRunning = false;
 
   constructor(private readonly prisma: PrismaService) {
     const apiKey = process.env.ROSTA_API_KEY;
@@ -65,17 +66,82 @@ export class RostaSyncService {
       .substring(0, 200);
   }
 
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  private getPageDelayMs(): number {
+    const raw = process.env.ROSTA_PAGE_DELAY_MS;
+    const parsed = raw ? Number(raw) : NaN;
+
+    if (Number.isFinite(parsed) && parsed >= 0) {
+      return parsed;
+    }
+
+    return 7_000;
+  }
+
+  private getPerPage(): number {
+    const raw = process.env.ROSTA_PER_PAGE;
+    const parsed = raw ? Number(raw) : NaN;
+
+    if (Number.isFinite(parsed) && parsed > 0 && parsed <= 100) {
+      return Math.floor(parsed);
+    }
+
+    return 100;
+  }
+
+  private async fetchPage<T>(
+    path: string,
+    page: number,
+  ): Promise<RostaPage<T>> {
+    let retries = 0;
+
+    while (retries < 5) {
+      try {
+        const { data } = await this.http.get<RostaPage<T>>(path, {
+          params: { page, per_page: this.getPerPage() },
+        });
+
+        return data;
+      } catch (err) {
+        if (axios.isAxiosError(err) && err.response?.status === 429) {
+          const retryAfterHeader = err.response.headers['retry-after'];
+          const retryAfterMs = retryAfterHeader
+            ? parseInt(retryAfterHeader, 10) * 1000
+            : Math.min(15_000 * 2 ** retries, 60_000);
+
+          this.logger.warn(
+            `ROSTA 429 on ${path} page ${page}, retry ${retries + 1}/5 after ${retryAfterMs}ms`,
+          );
+
+          await this.sleep(retryAfterMs);
+          retries++;
+          continue;
+        }
+
+        throw err;
+      }
+    }
+
+    throw new Error(
+      `ROSTA rate limit exceeded for ${path} page ${page} after 5 retries`,
+    );
+  }
+
   private async fetchAllPages<T>(path: string): Promise<T[]> {
     const results: T[] = [];
     let page = 1;
 
     while (true) {
-      const { data } = await this.http.get<RostaPage<T>>(path, {
-        params: { page, per_page: 100 },
-      });
-      results.push(...data.data);
-      if (page >= data.meta.last_page) break;
+      const response = await this.fetchPage<T>(path, page);
+
+      results.push(...response.data);
+      if (page >= response.meta.last_page) break;
       page++;
+
+      await this.sleep(this.getPageDelayMs());
     }
 
     return results;
@@ -154,43 +220,63 @@ export class RostaSyncService {
   async syncProducts(
     categoryMap: Map<string, string>,
   ): Promise<Map<string, string>> {
-    const items = await this.fetchAllPages<RostaItem>('/items');
-
     const rostaToDbId = new Map<string, string>();
+    let page = 1;
 
-    for (const item of items) {
-      const categoryId = item.parent_id
-        ? (categoryMap.get(item.parent_id) ?? null)
-        : null;
+    while (true) {
+      const response = await this.fetchPage<RostaItem>('/items', page);
 
-      const price = this.parsePrice(item);
-      const stock = this.parseStock(item);
+      for (const item of response.data) {
+        const categoryId = item.parent_id
+          ? (categoryMap.get(item.parent_id) ?? null)
+          : null;
 
-      const product = await this.prisma.product.upsert({
-        where: { rostaId: item.id },
-        create: {
-          name: item.name,
-          price,
-          isPublished: true,
-          isDraft: false,
-          stock,
-          categoryId,
-          rostaId: item.id,
-        },
-        update: {
-          name: item.name,
-          price,
-          stock,
-          categoryId,
-        },
-      });
+        const price = this.parsePrice(item);
+        const stock = this.parseStock(item);
 
-      rostaToDbId.set(item.id, product.id);
+        const product = await this.prisma.product.upsert({
+          where: { rostaId: item.id },
+          create: {
+            name: item.name,
+            price,
+            isPublished: true,
+            isDraft: false,
+            stock,
+            categoryId,
+            rostaId: item.id,
+          },
+          update: {
+            name: item.name,
+            price,
+            stock,
+            categoryId,
+          },
+        });
+
+        rostaToDbId.set(item.id, product.id);
+      }
+
+      this.logger.log(
+        `Products page ${page}/${response.meta.last_page} synced, total: ${rostaToDbId.size}`,
+      );
+
+      if (page >= response.meta.last_page) {
+        break;
+      }
+
+      page++;
+      await this.sleep(this.getPageDelayMs());
     }
 
     return rostaToDbId;
   }
   async syncAll(): Promise<void> {
+    if (this.isSyncRunning) {
+      this.logger.warn('ROSTA sync skipped: previous sync is still running');
+      return;
+    }
+
+    this.isSyncRunning = true;
     this.logger.log('ROSTA sync started');
     const t0 = Date.now();
 
@@ -212,6 +298,8 @@ export class RostaSyncService {
 
       const message = err instanceof Error ? err.message : String(err);
       this.logger.error(`ROSTA sync failed: ${message}`);
+    } finally {
+      this.isSyncRunning = false;
     }
   }
 }
