@@ -39,10 +39,6 @@ export class RostaSyncService {
   private readonly logger = new Logger(RostaSyncService.name);
   private readonly http: AxiosInstance;
 
-  private isSyncEnabled(): boolean {
-    return process.env.ROSTA_SYNC_ENABLED === 'true';
-  }
-
   constructor(private readonly prisma: PrismaService) {
     const apiKey = process.env.ROSTA_API_KEY;
     const baseURL =
@@ -195,10 +191,6 @@ export class RostaSyncService {
     return rostaToDbId;
   }
   async syncAll(): Promise<void> {
-    if (!this.isSyncEnabled()) {
-      return;
-    }
-
     this.logger.log('ROSTA sync started');
     const t0 = Date.now();
 
