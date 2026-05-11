@@ -9,6 +9,7 @@ import {
 } from '@nestjs/graphql';
 import { ProductService } from './product.service';
 import { ProductListModel, ProductModel } from './models/product.model';
+import { RostaSyncStatusModel } from './models/rosta-sync.model';
 import {
   CreateVariantInput,
   ProductVariantModel,
@@ -19,10 +20,14 @@ import { UpdateProductInput } from './inputs/update-product.input';
 import { FilterProductInput } from './inputs/filter-product.input';
 import { Authorization } from '../../../shared/decorators/authorization.decorator';
 import { Role } from '../../../../prisma/generated/prisma/enums';
+import { RostaSyncService } from './rosta-sync.service';
 
 @Resolver(() => ProductModel)
 export class ProductResolver {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService,
+    private readonly rostaSyncService: RostaSyncService,
+  ) {}
 
   @Query(() => ProductListModel, { name: 'findAllProducts' })
   async findAll(
@@ -75,6 +80,26 @@ export class ProductResolver {
   @Mutation(() => ProductModel, { name: 'toggleProductPublish' })
   async togglePublish(@Args('id') id: string) {
     return this.productService.togglePublish(id);
+  }
+
+  @Authorization(Role.ADMIN)
+  @Mutation(() => Boolean, { name: 'adminSyncRostaProducts' })
+  async adminSyncRostaProducts() {
+    await this.rostaSyncService.syncAll();
+    return true;
+  }
+
+  @Authorization(Role.ADMIN)
+  @Query(() => RostaSyncStatusModel, { name: 'getRostaSyncStatus' })
+  async getRostaSyncStatus() {
+    return this.rostaSyncService.getSyncStatus();
+  }
+
+  @Authorization(Role.ADMIN)
+  @Mutation(() => Boolean, { name: 'adminCancelRostaSync' })
+  async adminCancelRostaSync() {
+    this.rostaSyncService.cancelSync();
+    return true;
   }
 
   // ─── VARIANTS ─────────────────────────────────────────────────────────────

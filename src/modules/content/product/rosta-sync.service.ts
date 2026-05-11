@@ -34,11 +34,25 @@ interface RostaPage<T> {
   };
 }
 
+export interface SyncStatus {
+  isRunning: boolean;
+  progress: number; // 0-100
+  status: string;
+  error?: string;
+  startedAt?: Date;
+}
+
 @Injectable()
 export class RostaSyncService {
   private readonly logger = new Logger(RostaSyncService.name);
   private readonly http: AxiosInstance;
   private isSyncRunning = false;
+  private isCancelled = false;
+  private syncStatus: SyncStatus = {
+    isRunning: false,
+    progress: 0,
+    status: 'idle',
+  };
 
   constructor(private readonly prisma: PrismaService) {
     const apiKey = process.env.ROSTA_API_KEY;
@@ -264,6 +278,11 @@ export class RostaSyncService {
         break;
       }
 
+      if (this.isCancelled) {
+        this.logger.warn('ROSTA sync cancelled during products pagination');
+        break;
+      }
+
       page++;
       await this.sleep(this.getPageDelayMs());
     }
@@ -277,29 +296,77 @@ export class RostaSyncService {
     }
 
     this.isSyncRunning = true;
+    this.isCancelled = false;
+    this.syncStatus = {
+      isRunning: true,
+      progress: 0,
+      status: 'Запуск синхронизации...',
+      startedAt: new Date(),
+    };
     this.logger.log('ROSTA sync started');
     const t0 = Date.now();
 
     try {
+      this.syncStatus.progress = 10;
+      this.syncStatus.status = 'Загрузка категорий...';
       const categoryMap = await this.syncCategories();
       this.logger.log(`Categories synced: ${categoryMap.size}`);
 
+      if (this.isCancelled) {
+        this.syncStatus.status = 'Синхронизация отменена';
+        return;
+      }
+
+      this.syncStatus.progress = 50;
+      this.syncStatus.status = `Загрузка товаров (${categoryMap.size} категорий)...`;
       const productsMap = await this.syncProducts(categoryMap);
       this.logger.log(`Products synced: ${productsMap.size}`);
 
+      if (this.isCancelled) {
+        this.syncStatus.status = 'Синхронизация отменена';
+        return;
+      }
+
+      this.syncStatus.progress = 100;
+      this.syncStatus.status = `Готово: ${productsMap.size} товаров синхронизировано`;
       this.logger.log(`ROSTA sync done in ${Date.now() - t0}ms`);
     } catch (err) {
+      if (this.isCancelled) {
+        this.syncStatus.status = 'Синхронизация отменена';
+        return;
+      }
+
       if (axios.isAxiosError(err) && err.response?.status === 401) {
         this.logger.warn(
           'ROSTA sync skipped: invalid or not-yet-issued ROSTA_API_KEY (401)',
         );
+        this.syncStatus.error = 'Ошибка: неверный ROSTA_API_KEY';
         return;
       }
 
       const message = err instanceof Error ? err.message : String(err);
       this.logger.error(`ROSTA sync failed: ${message}`);
+      this.syncStatus.error = `Ошибка: ${message}`;
     } finally {
       this.isSyncRunning = false;
+      setTimeout(() => {
+        this.syncStatus = {
+          isRunning: false,
+          progress: 0,
+          status: 'idle',
+        };
+      }, 2000);
     }
+  }
+
+  cancelSync(): void {
+    if (!this.isSyncRunning) return;
+    this.isCancelled = true;
+    this.syncStatus.status = 'Отмена...';
+    this.logger.warn('ROSTA sync cancellation requested');
+  }
+
+  getSyncStatus(): SyncStatus {
+    return { ...this.syncStatus };
   }
 }

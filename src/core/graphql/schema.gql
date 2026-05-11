@@ -283,10 +283,12 @@ enum MediaType {
 type Mutation {
   addPostComment(data: CreateCommentInput!, postId: String!): ArticleCommentModel!
   addToCart(data: AddToCartInput!): CartModel!
+  adminCancelRostaSync: Boolean!
   adminCreateBranch(data: CreateBranchInput!): BranchModel!
   adminDeleteBranch(id: String!): Boolean!
   adminDeletePostComment(commentId: String!): Boolean!
   adminRefundOrder(orderId: String!): Boolean!
+  adminSyncRostaProducts: Boolean!
   adminUpdateBranch(data: UpdateBranchInput!, id: String!): BranchModel!
   adminUpdateOrderStatus(data: UpdateOrderStatusInput!, orderId: String!): OrderModel!
   assignRole(role: Role!, userId: String!): UserModel!
@@ -616,6 +618,7 @@ type Query {
   getPosts(filter: FilterPostInput): PostListModel!
   getProductReviews(limit: Int = 10, page: Int = 1, productId: String!): ReviewListModel!
   getProductVariants(productId: String!): [ProductVariantModel!]!
+  getRostaSyncStatus: RostaSyncStatusModel!
   loyaltyCardByToken(qrToken: String!): LoyaltyCardWithUserModel
   myLoyaltyCard: LoyaltyCardModel!
 }
@@ -660,6 +663,21 @@ enum Role {
   ADMIN
   MANAGER
   USER
+}
+
+type RostaSyncStatusModel {
+  """Ошибка, если она произошла"""
+  error: String
+  isRunning: Boolean!
+
+  """Прогресс синхронизации (0-100%)"""
+  progress: Int!
+
+  """Время запуска синхронизации"""
+  startedAt: DateTime
+
+  """Текущий статус"""
+  status: String!
 }
 
 type SessionMetadataModel {
