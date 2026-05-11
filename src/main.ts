@@ -71,6 +71,10 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(config.getOrThrow<number>('APPLICATION_PORT'));
+  const applicationPort = config.get<number>('APPLICATION_PORT');
+  const platformPort = process.env.PORT ? Number(process.env.PORT) : undefined;
+  const port = platformPort ?? applicationPort ?? 4000;
+
+  await app.listen(port, '0.0.0.0');
 }
 bootstrap();

@@ -28,6 +28,9 @@ RUN yarn build
 
 FROM base AS runtime
 
+ENV PORT=4000
+ENV APPLICATION_PORT=4000
+
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn .yarn
 COPY --from=build /app/node_modules ./node_modules
