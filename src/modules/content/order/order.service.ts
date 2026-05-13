@@ -80,15 +80,6 @@ export class OrderService {
     ) {
       throw new BadRequestException('Для курьерской доставки укажите адрес');
     }
-    if (
-      paymentMethod === PaymentMethod.CASH_ON_DELIVERY &&
-      shipping.deliveryType !== DeliveryType.PICKUP
-    ) {
-      throw new BadRequestException(
-        'Оплата при получении доступна только при самовывозе',
-      );
-    }
-
     if (shipping.branchId) {
       const branch = await this.prismaService.branch.findUnique({
         where: { id: shipping.branchId },
