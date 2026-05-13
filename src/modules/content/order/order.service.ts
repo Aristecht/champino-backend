@@ -542,19 +542,42 @@ export class OrderService {
       );
     }
 
-    const updated = await this.prismaService.order.update({
-      where: { id: orderId },
-      data: { status: next },
-      include: ORDER_INCLUDE,
+    const shouldMarkCodSucceeded =
+      !!order.payment &&
+      order.payment.method === PaymentMethod.CASH_ON_DELIVERY &&
+      order.payment.status === PaymentsStatus.PENDING &&
+      ((isPickup && next === OrderStatus.COMPLETED) ||
+        (!isPickup && next === OrderStatus.DELIVERED));
+
+    const updated = await this.prismaService.$transaction(async tx => {
+      if (shouldMarkCodSucceeded && order.payment) {
+        await tx.payment.update({
+          where: { id: order.payment.id },
+          data: {
+            status: PaymentsStatus.SUCCEEDED,
+            paidAt: new Date(),
+          },
+        });
+      }
+
+      return tx.order.update({
+        where: { id: orderId },
+        data: { status: next },
+        include: ORDER_INCLUDE,
+      });
     });
 
     this.notificationsService
       .notifyOrderStatusChanged(order.userId, orderId, input.status)
       .catch(() => {});
 
+    const paymentSucceededAfterUpdate =
+      order.payment?.status === PaymentsStatus.SUCCEEDED ||
+      shouldMarkCodSucceeded;
+
     if (
       (next === OrderStatus.COMPLETED || next === OrderStatus.DELIVERED) &&
-      order.payment?.status === PaymentsStatus.SUCCEEDED
+      paymentSucceededAfterUpdate
     ) {
       this.loyaltyService.incrementOrderCount(order.userId).catch(() => {});
     }
