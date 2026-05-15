@@ -531,7 +531,13 @@ type PostModel {
 type ProductCategoryModel {
   id: ID!
   name: String!
+  parent: ProductCategoryParentModel
   slug: String!
+}
+
+type ProductCategoryParentModel {
+  id: ID!
+  name: String!
 }
 
 type ProductListModel {

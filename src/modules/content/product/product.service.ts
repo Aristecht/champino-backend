@@ -84,7 +84,7 @@ export class ProductService {
         take: limit,
         orderBy,
         include: {
-          category: { select: { id: true, name: true, slug: true } },
+          category: { select: { id: true, name: true, slug: true, parent: { select: { id: true, name: true } } } },
           medias: true,
         },
       }),
@@ -131,7 +131,7 @@ export class ProductService {
         take: limit,
         orderBy,
         include: {
-          category: { select: { id: true, name: true, slug: true } },
+          category: { select: { id: true, name: true, slug: true, parent: { select: { id: true, name: true } } } },
           medias: true,
         },
       }),
@@ -148,7 +148,7 @@ export class ProductService {
     const product = await this.prismaService.product.findUnique({
       where: { id },
       include: {
-        category: { select: { id: true, name: true, slug: true } },
+        category: { select: { id: true, name: true, slug: true, parent: { select: { id: true, name: true } } } },
         medias: true,
       },
     });
@@ -196,7 +196,7 @@ export class ProductService {
         discountPercent: discountPercent ?? 0,
       },
       include: {
-        category: { select: { id: true, name: true, slug: true } },
+        category: { select: { id: true, name: true, slug: true, parent: { select: { id: true, name: true } } } },
         medias: true,
       },
     });
@@ -206,7 +206,7 @@ export class ProductService {
     return this.prismaService.product.create({
       data: { isDraft: true, isPublished: false },
       include: {
-        category: { select: { id: true, name: true, slug: true } },
+        category: { select: { id: true, name: true, slug: true, parent: { select: { id: true, name: true } } } },
         medias: true,
       },
     });
@@ -245,7 +245,7 @@ export class ProductService {
         }),
       },
       include: {
-        category: { select: { id: true, name: true, slug: true } },
+        category: { select: { id: true, name: true, slug: true, parent: { select: { id: true, name: true } } } },
         medias: true,
       },
     });
@@ -276,7 +276,7 @@ export class ProductService {
       where: { id },
       data: { isPublished: !product.isPublished },
       include: {
-        category: { select: { id: true, name: true, slug: true } },
+        category: { select: { id: true, name: true, slug: true, parent: { select: { id: true, name: true } } } },
         medias: true,
       },
     });
