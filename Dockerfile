@@ -8,16 +8,12 @@ RUN apt-get update \
 	&& apt-get install -y --no-install-recommends ca-certificates openssl dumb-init \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN corepack enable
-
 FROM base AS deps
 
-COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn .yarn
+COPY package.json package-lock.json ./
 
-RUN --mount=type=cache,id=yarn-cache,target=/root/.cache/yarn \
-    YARN_CACHE_FOLDER=/root/.cache/yarn \
-    yarn install --immutable
+RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
+    npm ci
 
 FROM deps AS build
 
@@ -25,16 +21,15 @@ ENV NODE_ENV=development
 
 COPY . .
 
-RUN yarn prisma generate
-RUN yarn build
+RUN npx prisma generate
+RUN npx nest build
 
 FROM base AS runtime
 
 ENV PORT=4000
 ENV APPLICATION_PORT=4000
 
-COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn .yarn
+COPY package.json package-lock.json ./
 COPY --from=build /app/node_modules ./node_modules
 
 COPY --from=build /app/dist ./dist
