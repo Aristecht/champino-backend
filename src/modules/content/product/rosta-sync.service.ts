@@ -84,6 +84,21 @@ export class RostaSyncService {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  private collectGroupIds(groups: RostaGroup[], rootId: string): Set<string> {
+    const ids = new Set<string>([rootId]);
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const g of groups) {
+        if (g.parent_id && ids.has(g.parent_id) && !ids.has(g.id)) {
+          ids.add(g.id);
+          changed = true;
+        }
+      }
+    }
+    return ids;
+  }
+
   private getPageDelayMs(): number {
     const raw = process.env.ROSTA_PAGE_DELAY_MS;
     const parsed = raw ? Number(raw) : NaN;
@@ -193,14 +208,19 @@ export class RostaSyncService {
     return parsed < 0 ? 0 : Math.floor(parsed);
   }
 
-  async syncCategories(): Promise<Map<string, string>> {
-    const groups = await this.fetchAllPages<RostaGroup>('/items/groups');
-
+  async syncCategories(
+    groups: RostaGroup[],
+    allowedGroupIds?: Set<string>,
+  ): Promise<Map<string, string>> {
     const rostaToDbId = new Map<string, string>();
 
+    const source = allowedGroupIds
+      ? groups.filter(g => allowedGroupIds.has(g.id))
+      : groups;
+
     const sorted = [
-      ...groups.filter(g => !g.parent_id),
-      ...groups.filter(g => g.parent_id),
+      ...source.filter(g => !g.parent_id),
+      ...source.filter(g => g.parent_id),
     ];
 
     for (const group of sorted) {
@@ -233,6 +253,7 @@ export class RostaSyncService {
 
   async syncProducts(
     categoryMap: Map<string, string>,
+    allowedGroupIds?: Set<string>,
   ): Promise<Map<string, string>> {
     const rostaToDbId = new Map<string, string>();
     let page = 1;
@@ -241,6 +262,12 @@ export class RostaSyncService {
       const response = await this.fetchPage<RostaItem>('/items', page);
 
       for (const item of response.data) {
+        if (allowedGroupIds) {
+          if (!item.parent_id || !allowedGroupIds.has(item.parent_id)) {
+            continue;
+          }
+        }
+
         const categoryId = item.parent_id
           ? (categoryMap.get(item.parent_id) ?? null)
           : null;
@@ -307,9 +334,32 @@ export class RostaSyncService {
     const t0 = Date.now();
 
     try {
+      this.syncStatus.progress = 5;
+      this.syncStatus.status = 'Загрузка групп Rosta...';
+      const allGroups = await this.fetchAllPages<RostaGroup>('/items/groups');
+
+      let allowedGroupIds: Set<string> | undefined;
+      const syncGroupName = process.env.ROSTA_SYNC_GROUP?.trim();
+      if (syncGroupName) {
+        const rootGroup = allGroups.find(
+          g => g.name.trim().toLowerCase() === syncGroupName.toLowerCase(),
+        );
+        if (!rootGroup) {
+          const msg = `ROSTA_SYNC_GROUP="${syncGroupName}" не найдена среди групп Rosta. Синхронизация отменена.`;
+          this.logger.error(msg);
+          this.syncStatus.error = msg;
+          return;
+        } else {
+          allowedGroupIds = this.collectGroupIds(allGroups, rootGroup.id);
+          this.logger.log(
+            `Фильтр по группе "${syncGroupName}": ${allowedGroupIds.size} групп (включая подгруппы)`,
+          );
+        }
+      }
+
       this.syncStatus.progress = 10;
       this.syncStatus.status = 'Загрузка категорий...';
-      const categoryMap = await this.syncCategories();
+      const categoryMap = await this.syncCategories(allGroups, allowedGroupIds);
       this.logger.log(`Categories synced: ${categoryMap.size}`);
 
       if (this.isCancelled) {
@@ -319,7 +369,7 @@ export class RostaSyncService {
 
       this.syncStatus.progress = 50;
       this.syncStatus.status = `Загрузка товаров (${categoryMap.size} категорий)...`;
-      const productsMap = await this.syncProducts(categoryMap);
+      const productsMap = await this.syncProducts(categoryMap, allowedGroupIds);
       this.logger.log(`Products synced: ${productsMap.size}`);
 
       if (this.isCancelled) {
