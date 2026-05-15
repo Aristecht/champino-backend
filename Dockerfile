@@ -6,7 +6,8 @@ WORKDIR /app
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends ca-certificates openssl dumb-init \
-	&& rm -rf /var/lib/apt/lists/*
+	&& rm -rf /var/lib/apt/lists/* \
+	&& npm install -g npm@11
 
 FROM base AS deps
 
