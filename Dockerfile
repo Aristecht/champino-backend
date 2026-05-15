@@ -14,7 +14,7 @@ FROM base AS deps
 COPY package.json package-lock.json ./
 
 RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
-    npm ci
+    npm ci --include=dev
 
 FROM deps AS build
 
