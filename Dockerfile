@@ -15,7 +15,9 @@ FROM base AS deps
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn .yarn
 
-RUN yarn install --immutable
+RUN --mount=type=cache,id=yarn-cache,target=/root/.cache/yarn \
+    YARN_CACHE_FOLDER=/root/.cache/yarn \
+    yarn install --immutable
 
 FROM deps AS build
 
