@@ -124,13 +124,14 @@ export class RostaSyncService {
   private async fetchPage<T>(
     path: string,
     page: number,
+    extraParams?: Record<string, string | number>,
   ): Promise<RostaPage<T>> {
     let retries = 0;
 
     while (retries < 5) {
       try {
         const { data } = await this.http.get<RostaPage<T>>(path, {
-          params: { page, per_page: this.getPerPage() },
+          params: { page, per_page: this.getPerPage(), ...extraParams },
         });
 
         return data;
@@ -218,10 +219,21 @@ export class RostaSyncService {
       ? groups.filter(g => allowedGroupIds.has(g.id))
       : groups;
 
-    const sorted = [
-      ...source.filter(g => !g.parent_id),
-      ...source.filter(g => g.parent_id),
-    ];
+    // Topological sort: each parent is guaranteed to appear before its children.
+    // The simple 2-pass split (no parent_id first) breaks for depth > 2.
+    const idSet = new Set(source.map(g => g.id));
+    const sorted: RostaGroup[] = [];
+    const visited = new Set<string>();
+    const visit = (g: RostaGroup) => {
+      if (visited.has(g.id)) return;
+      if (g.parent_id && idSet.has(g.parent_id) && !visited.has(g.parent_id)) {
+        const parent = source.find(s => s.id === g.parent_id);
+        if (parent) visit(parent);
+      }
+      visited.add(g.id);
+      sorted.push(g);
+    };
+    for (const g of source) visit(g);
 
     for (const group of sorted) {
       const slug = this.slugify(group.name) || group.id;
@@ -256,62 +268,80 @@ export class RostaSyncService {
     allowedGroupIds?: Set<string>,
   ): Promise<Map<string, string>> {
     const rostaToDbId = new Map<string, string>();
-    let page = 1;
 
-    while (true) {
-      const response = await this.fetchPage<RostaItem>('/items', page);
+    // When filtering by group — fetch per group via API parent_id param.
+    // This avoids downloading all items and filtering client-side.
+    const queryTargets: Array<Record<string, string> | undefined> =
+      allowedGroupIds
+        ? [...allowedGroupIds].map(id => ({ parent_id: id }))
+        : [undefined];
 
-      for (const item of response.data) {
-        if (allowedGroupIds) {
-          if (!item.parent_id || !allowedGroupIds.has(item.parent_id)) {
+    for (const extraParams of queryTargets) {
+      let page = 1;
+
+      while (true) {
+        const response = await this.fetchPage<RostaItem>(
+          '/items',
+          page,
+          extraParams,
+        );
+
+        for (const item of response.data) {
+          // Guard: skip items whose parent group is not in the allowed set.
+          // Needed because the Rosta API parent_id filter is not always reliable.
+          if (
+            allowedGroupIds &&
+            (!item.parent_id || !allowedGroupIds.has(item.parent_id))
+          ) {
             continue;
           }
+
+          const categoryId = item.parent_id
+            ? (categoryMap.get(item.parent_id) ?? null)
+            : null;
+
+          const price = this.parsePrice(item);
+          const stock = this.parseStock(item);
+
+          const product = await this.prisma.product.upsert({
+            where: { rostaId: item.id },
+            create: {
+              name: item.name,
+              price,
+              isPublished: true,
+              isDraft: false,
+              stock,
+              categoryId,
+              rostaId: item.id,
+            },
+            update: {
+              name: item.name,
+              price,
+              stock,
+              categoryId,
+            },
+          });
+
+          rostaToDbId.set(item.id, product.id);
         }
 
-        const categoryId = item.parent_id
-          ? (categoryMap.get(item.parent_id) ?? null)
-          : null;
+        const label = extraParams?.parent_id ?? 'all';
+        this.logger.log(
+          `Products [${label}] page ${page}/${response.meta.last_page}, total: ${rostaToDbId.size}`,
+        );
 
-        const price = this.parsePrice(item);
-        const stock = this.parseStock(item);
+        if (page >= response.meta.last_page) break;
 
-        const product = await this.prisma.product.upsert({
-          where: { rostaId: item.id },
-          create: {
-            name: item.name,
-            price,
-            isPublished: true,
-            isDraft: false,
-            stock,
-            categoryId,
-            rostaId: item.id,
-          },
-          update: {
-            name: item.name,
-            price,
-            stock,
-            categoryId,
-          },
-        });
+        if (this.isCancelled) {
+          this.logger.warn('ROSTA sync cancelled during products pagination');
+          break;
+        }
 
-        rostaToDbId.set(item.id, product.id);
+        page++;
+        await this.sleep(this.getPageDelayMs());
       }
 
-      this.logger.log(
-        `Products page ${page}/${response.meta.last_page} synced, total: ${rostaToDbId.size}`,
-      );
-
-      if (page >= response.meta.last_page) {
-        break;
-      }
-
-      if (this.isCancelled) {
-        this.logger.warn('ROSTA sync cancelled during products pagination');
-        break;
-      }
-
-      page++;
-      await this.sleep(this.getPageDelayMs());
+      if (this.isCancelled) break;
     }
 
     return rostaToDbId;
@@ -339,28 +369,77 @@ export class RostaSyncService {
       const allGroups = await this.fetchAllPages<RostaGroup>('/items/groups');
 
       let allowedGroupIds: Set<string> | undefined;
+      let rootGroupId: string | undefined;
       const syncGroupName = process.env.ROSTA_SYNC_GROUP?.trim();
+
+      this.logger.log(
+        `ROSTA_SYNC_GROUP=${syncGroupName ? `"${syncGroupName}"` : '(не задан, синхронизируются все)'}`,
+      );
+
       if (syncGroupName) {
+        this.logger.log(
+          `Доступные группы Rosta (${allGroups.length}): ${allGroups.map(g => `"${g.name}"`).join(', ')}`,
+        );
+
         const rootGroup = allGroups.find(
           g => g.name.trim().toLowerCase() === syncGroupName.toLowerCase(),
         );
+
         if (!rootGroup) {
           const msg = `ROSTA_SYNC_GROUP="${syncGroupName}" не найдена среди групп Rosta. Синхронизация отменена.`;
           this.logger.error(msg);
           this.syncStatus.error = msg;
           return;
         } else {
+          rootGroupId = rootGroup.id;
           allowedGroupIds = this.collectGroupIds(allGroups, rootGroup.id);
           this.logger.log(
-            `Фильтр по группе "${syncGroupName}": ${allowedGroupIds.size} групп (включая подгруппы)`,
+            `Фильтр по группе "${syncGroupName}" (id=${rootGroup.id}): ${allowedGroupIds.size} групп (включая подгруппы)`,
           );
         }
       }
 
       this.syncStatus.progress = 10;
       this.syncStatus.status = 'Загрузка категорий...';
-      const categoryMap = await this.syncCategories(allGroups, allowedGroupIds);
+
+      // Exclude the root group itself from categories — only import its children.
+      // allowedGroupIds (with root) is still used for product-level filtering.
+      const categoryAllowedIds: Set<string> | undefined =
+        allowedGroupIds && rootGroupId
+          ? new Set([...allowedGroupIds].filter(id => id !== rootGroupId))
+          : allowedGroupIds;
+
+      const categoryMap = await this.syncCategories(
+        allGroups,
+        categoryAllowedIds,
+      );
       this.logger.log(`Categories synced: ${categoryMap.size}`);
+
+      // Clean up stale categories left over from previous unfiltered syncs
+      if (categoryAllowedIds) {
+        const idsToKeep = [...categoryAllowedIds];
+        const staleCategories = await this.prisma.category.findMany({
+          where: {
+            rostaId: { not: null },
+            NOT: { rostaId: { in: idsToKeep } },
+          },
+          select: { id: true },
+        });
+        if (staleCategories.length > 0) {
+          const staleCatIds = staleCategories.map(c => c.id);
+          // Detach products first to avoid FK issues
+          await this.prisma.product.updateMany({
+            where: { categoryId: { in: staleCatIds } },
+            data: { categoryId: null },
+          });
+          await this.prisma.category.deleteMany({
+            where: { id: { in: staleCatIds } },
+          });
+          this.logger.log(
+            `Удалено ${staleCategories.length} устаревших категорий из БД`,
+          );
+        }
+      }
 
       if (this.isCancelled) {
         this.syncStatus.status = 'Синхронизация отменена';

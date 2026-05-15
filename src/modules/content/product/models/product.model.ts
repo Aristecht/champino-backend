@@ -24,6 +24,15 @@ export class ProductMediaModel {
 }
 
 @ObjectType()
+export class ProductCategoryParentModel {
+  @Field(() => ID)
+  id: string;
+
+  @Field()
+  name: string;
+}
+
+@ObjectType()
 export class ProductCategoryModel {
   @Field(() => ID)
   id: string;
@@ -33,6 +42,9 @@ export class ProductCategoryModel {
 
   @Field()
   slug: string;
+
+  @Field(() => ProductCategoryParentModel, { nullable: true })
+  parent?: ProductCategoryParentModel;
 }
 
 @ObjectType()
