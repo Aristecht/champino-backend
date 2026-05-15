@@ -219,8 +219,6 @@ export class RostaSyncService {
       ? groups.filter(g => allowedGroupIds.has(g.id))
       : groups;
 
-    // Topological sort: each parent is guaranteed to appear before its children.
-    // The simple 2-pass split (no parent_id first) breaks for depth > 2.
     const idSet = new Set(source.map(g => g.id));
     const sorted: RostaGroup[] = [];
     const visited = new Set<string>();
@@ -346,6 +344,7 @@ export class RostaSyncService {
 
     return rostaToDbId;
   }
+
   async syncAll(): Promise<void> {
     if (this.isSyncRunning) {
       this.logger.warn('ROSTA sync skipped: previous sync is still running');
