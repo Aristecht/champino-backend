@@ -13,7 +13,7 @@ export function getMailerConfig(configService: ConfigService): MailerOptions {
       },
     },
     defaults: {
-      from: `"Partfolio-Hub" ${configService.getOrThrow<string>('MAIL_LOGIN')}`,
+      from: `"${configService.getOrThrow<string>('MAIL_FROM_NAME')}" <${configService.getOrThrow<string>('MAIL_FROM_ADDRESS')}>`,
     },
   };
 }

@@ -55,9 +55,11 @@ export class MailService {
   }
 
   private sendMail(email: string, subject: string, html: string) {
-    const fromEmail = this.configService.getOrThrow<string>('MAIL_FROM');
+    const fromName = this.configService.getOrThrow<string>('MAIL_FROM_NAME');
+    const fromEmail =
+      this.configService.getOrThrow<string>('MAIL_FROM_ADDRESS');
     return this.mailerService.sendMail({
-      from: fromEmail,
+      from: `"${fromName}" <${fromEmail}>`,
       to: email,
       subject,
       html,
