@@ -1,5 +1,6 @@
 import {
   Args,
+  Context,
   Mutation,
   Parent,
   Query,
@@ -8,9 +9,11 @@ import {
 } from '@nestjs/graphql';
 import { AccountService } from './account.service';
 import { UserModel } from './models/user.model';
+import { AuthModel } from './models/auth.model';
 import { CreateUserInput } from './inputs/create-user.input';
 import { Authorized } from '../../../shared/decorators/authorized.decorator';
 import { Authorization } from '../../../shared/decorators/authorization.decorator';
+import { UserAgent } from '../../../shared/decorators/user-agent.decorator';
 import type { User } from '../../../../prisma/generated/prisma/client';
 import { Role } from '../../../../prisma/generated/prisma/enums';
 import { ChangeEmailInput } from './inputs/change-email.input';
@@ -18,6 +21,7 @@ import { ChangePasswordInput } from './inputs/change-password.input';
 import { NewEmailInput } from './inputs/new-email.input';
 import { registerEnumType } from '@nestjs/graphql';
 import { NotificationSettingsModel } from '../../notifications/models/notifications-settings.model';
+import type { GqlContext } from '../../../shared/types/gql-context.types';
 
 registerEnumType(Role, { name: 'Role' });
 
@@ -50,9 +54,13 @@ export class AccountResolver {
     return this.accountService.me(id);
   }
 
-  @Mutation(() => UserModel, { name: 'createUser' })
-  async create(@Args('data') input: CreateUserInput) {
-    return this.accountService.create(input);
+  @Mutation(() => AuthModel, { name: 'createUser' })
+  async create(
+    @Context() { req }: GqlContext,
+    @Args('data') input: CreateUserInput,
+    @UserAgent() userAgent: string,
+  ) {
+    return this.accountService.create(req, input, userAgent);
   }
 
   @Authorization()

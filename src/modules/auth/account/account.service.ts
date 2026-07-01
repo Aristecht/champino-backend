@@ -20,6 +20,9 @@ import { ChangePasswordInput } from './inputs/change-password.input';
 import { generateToken } from '../../../shared/utils/generate-token.util';
 import { MailService } from '../../libs/mail/mail.service';
 import { NewEmailInput } from './inputs/new-email.input';
+import { saveSession } from '../../../shared/utils/session.util';
+import { getSessionMetadata } from '../../../shared/utils/session-metadata.util';
+import type { Request } from 'express';
 
 @Injectable()
 export class AccountService {
@@ -68,7 +71,7 @@ export class AccountService {
     };
   }
 
-  async create(input: CreateUserInput) {
+  async create(req: Request, input: CreateUserInput, userAgent: string) {
     const { username, email, password } = input;
 
     const isUsernameExist = await this.prismaService.user.findUnique({
@@ -97,7 +100,10 @@ export class AccountService {
 
     await this.verificationService.sendVerificationToken(user);
 
-    return user;
+    const metadata = getSessionMetadata(req, userAgent);
+    await saveSession(req, user, metadata);
+
+    return { user, message: null };
   }
 
   async changePassword(user: User, input: ChangePasswordInput) {

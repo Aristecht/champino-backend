@@ -306,7 +306,7 @@ type Mutation {
   createOrder(data: CreateOrderInput!): OrderModel!
   createProduct(data: CreateProductInput!): ProductModel!
   createReview(data: CreateReviewInput!): ReviewModel!
-  createUser(data: CreateUserInput!): UserModel!
+  createUser(data: CreateUserInput!): AuthModel!
   createVariant(data: CreateVariantInput!, productId: String!): ProductVariantModel!
   deactivateAccount(data: DeactivateAccountInput!): AuthModel!
   deleteAddress(id: String!): Boolean!
