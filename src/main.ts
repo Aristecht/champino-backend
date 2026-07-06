@@ -30,7 +30,7 @@ async function bootstrap() {
   const redis = app.get(RedisService);
   const apiPrefix = config.get<string>('API_PREFIX')?.replace(/^\/+|\/+$/g, '');
 
-  // Ждём подключения Redis перед настройкой сессий
+  // Ждём подключения Redis перед настройкой сессий (с таймаутом)
   await redis.waitForConnection();
 
   if (apiPrefix) {
@@ -102,5 +102,10 @@ async function bootstrap() {
   const port = platformPort ?? applicationPort ?? 4000;
 
   await app.listen(port, '0.0.0.0');
+  console.log(`🚀 Server listening on http://0.0.0.0:${port}`);
 }
-bootstrap();
+
+bootstrap().catch(err => {
+  console.error('❌ Fatal error during bootstrap:', err);
+  process.exit(1);
+});
