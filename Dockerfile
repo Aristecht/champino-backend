@@ -34,7 +34,7 @@ COPY package.json package-lock.json ./
 COPY --from=build /app/node_modules ./node_modules
 
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/prisma ./dist/prisma
 COPY --from=build /app/src/core/config ./src/core/config
 COPY --from=build /app/src/core/graphql ./src/core/graphql
 
