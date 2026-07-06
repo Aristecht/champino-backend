@@ -40,5 +40,8 @@ COPY --from=build /app/src/core/graphql ./src/core/graphql
 
 EXPOSE 4000
 
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
+  CMD node -e "fetch('http://localhost:4000/health').then(r => r.status === 200 ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
+
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "dist/src/main.js"]

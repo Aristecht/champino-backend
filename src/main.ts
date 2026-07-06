@@ -1,5 +1,3 @@
-// import 'reflect-metadata';
-
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -10,8 +8,18 @@ import passport from 'passport';
 
 import { CoreModule } from './core/core.module';
 import { RedisService } from './core/redis/redis.service';
+import { GlobalExceptionFilter } from './shared/filters/global-exception.filter';
 import { ms } from './shared/utils/ms.util';
 import { parseBoolean } from './shared/utils/parse-boolean.util';
+
+// Глобальные обработчики для предотвращения падения процесса
+process.on('uncaughtException', error => {
+  console.error('[uncaughtException]', error);
+});
+
+process.on('unhandledRejection', reason => {
+  console.error('[unhandledRejection]', reason);
+});
 
 async function bootstrap() {
   const app = await NestFactory.create(CoreModule, {
@@ -22,12 +30,20 @@ async function bootstrap() {
   const redis = app.get(RedisService);
   const apiPrefix = config.get<string>('API_PREFIX')?.replace(/^\/+|\/+$/g, '');
 
+  // Ждём подключения Redis перед настройкой сессий
+  await redis.waitForConnection();
+
   if (apiPrefix) {
     app.setGlobalPrefix(apiPrefix);
   }
 
   app.use(cookieParser(config.getOrThrow<string>('COOKIE_SECRET')));
   app.getHttpAdapter().getInstance().set('trust proxy', 1);
+
+  const sessionSecure = parseBoolean(
+    config.getOrThrow<string>('SESSION_SECURE'),
+  );
+
   app.use(
     session({
       secret: config.getOrThrow<string>('SESSION_SECRET'),
@@ -38,10 +54,8 @@ async function bootstrap() {
         domain: config.get<string>('SESSION_DOMAIN') || undefined,
         maxAge: ms(config.getOrThrow<string | number>('SESSION_MAX_AGE')),
         httpOnly: parseBoolean(config.getOrThrow<string>('SESSION_HTTP_ONLY')),
-        secure: parseBoolean(config.getOrThrow<string>('SESSION_SECURE')),
-        sameSite: parseBoolean(config.getOrThrow<string>('SESSION_SECURE'))
-          ? 'none'
-          : 'lax',
+        secure: sessionSecure,
+        sameSite: sessionSecure ? 'none' : 'lax',
       },
       store: new RedisStore({
         client: redis.client,
@@ -57,6 +71,16 @@ async function bootstrap() {
     exposedHeaders: ['Set-Cookie'],
   });
 
+  // Health check endpoint
+  const httpAdapter = app.getHttpAdapter();
+  httpAdapter.get('/health', (_req, res) => {
+    res.status(200).json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+    });
+  });
+
   console.log('[bootstrap] runtime config', {
     nodeEnv: config.get<string>('NODE_ENV'),
     apiPrefix: apiPrefix || '',
@@ -64,6 +88,8 @@ async function bootstrap() {
     applicationUrl: config.get<string>('APPLICATION_URL'),
     googleCallbackUrl: config.get<string>('GOOGLE_CALLBACK_URL'),
   });
+
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({
