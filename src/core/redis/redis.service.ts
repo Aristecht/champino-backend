@@ -1,17 +1,12 @@
-import {
-  Injectable,
-  Logger,
-  OnModuleDestroy,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createClient, RedisClientType } from 'redis';
 
 @Injectable()
-export class RedisService implements OnModuleInit, OnModuleDestroy {
+export class RedisService implements OnModuleDestroy {
   private readonly logger = new Logger(RedisService.name);
   client!: RedisClientType;
-  private connectPromise: Promise<void> | null = null;
+  private connectPromise: Promise<RedisClientType>;
 
   constructor(private readonly configService: ConfigService) {
     this.client = createClient({
@@ -23,17 +18,14 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       this.logger.error('❌ Redis connection error', err),
     );
     this.client.on('end', () => this.logger.warn('⚠️ Redis connection closed'));
-  }
 
-  async onModuleInit() {
+    // Подключаемся к Redis сразу (в конструкторе),
+    // т.к. session store (main.ts) использует redis.client до app.listen()
     this.connectPromise = this.client.connect();
-    await this.connectPromise;
   }
 
   async waitForConnection(): Promise<void> {
-    if (this.connectPromise) {
-      await this.connectPromise;
-    }
+    await this.connectPromise;
   }
 
   async onModuleDestroy() {
