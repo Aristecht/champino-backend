@@ -5,7 +5,7 @@ ENV NODE_ENV=production
 WORKDIR /app
 
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends ca-certificates openssl dumb-init \
+	&& apt-get install -y --no-install-recommends ca-certificates openssl dumb-init curl \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& npm install -g npm@11
 
@@ -40,8 +40,10 @@ COPY --from=build /app/src/core/graphql ./src/core/graphql
 
 EXPOSE 4000
 
-HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
-  CMD node -e "fetch('http://localhost:4000/health').then(r => r.status === 200 ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
+# Healthcheck через curl — не зависит от Node.js event loop
+# При перегрузке сервера curl не блокируется, в отличие от node -e fetch(...)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=5 \
+  CMD curl -f http://localhost:4000/health || exit 1
 
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "dist/src/main.js"]
