@@ -1,3 +1,4 @@
+import { APP_GUARD } from '@nestjs/core';
 import { Module } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from './prisma/prisma.module';
@@ -6,6 +7,7 @@ import { ApolloDriver } from '@nestjs/apollo';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { IS_DEV_ENV } from '../shared/utils/is-dev.util';
 import { getGraphQLConfig } from './config/graphql.config';
+import { getThrottlerConfig } from './config/throttler.config';
 import { RedisModule } from './redis/redis.module';
 import { AccountModule } from '../modules/auth/account/account.module';
 import { SessionModule } from '../modules/auth/session/session.module';
@@ -33,24 +35,19 @@ import { AnalyticsModule } from '../modules/content/analytics/analytics.module';
 import { NewsModule } from '../modules/content/news/news.module';
 import { LoyaltyModule } from '../modules/loyalty/loyalty.module';
 
+import { GqlThrottlerGuard } from '../shared/guards/gql-throttler.guard';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       ignoreEnvFile: process.env.NODE_ENV === 'production',
       isGlobal: true,
     }),
-    ThrottlerModule.forRoot([
-      {
-        name: 'auth',
-        ttl: 15 * 60 * 1000,
-        limit: 5,
-      },
-      {
-        name: 'strict',
-        ttl: 60 * 60 * 1000,
-        limit: 3,
-      },
-    ]),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: getThrottlerConfig,
+    }),
     GraphQLModule.forRootAsync({
       driver: ApolloDriver,
       useFactory: getGraphQLConfig,
@@ -83,6 +80,12 @@ import { LoyaltyModule } from '../modules/loyalty/loyalty.module';
     AnalyticsModule,
     NewsModule,
     LoyaltyModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: GqlThrottlerGuard,
+    },
   ],
 })
 export class CoreModule {}
