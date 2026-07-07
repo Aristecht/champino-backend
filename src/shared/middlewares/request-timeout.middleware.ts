@@ -19,18 +19,23 @@ import { Request, Response, NextFunction } from 'express';
 export class RequestTimeoutMiddleware implements NestMiddleware {
   private readonly defaultTimeout = 25_000; // 25 секунд
 
-  use(req: Request, res: Response, next: NextFunction) {
+  use = (req: Request, res: Response, next: NextFunction) => {
     const timeout = this.getTimeout(req) ?? this.defaultTimeout;
 
     const timer = setTimeout(() => {
       if (res.writableEnded) return;
 
-      res.status(408).json({
-        statusCode: 408,
-        message: 'Request Timeout',
-        timestamp: new Date().toISOString(),
-        path: req.url,
-      });
+      if (!res.headersSent) {
+        res.status(408).json({
+          statusCode: 408,
+          message: 'Request Timeout',
+          timestamp: new Date().toISOString(),
+          path: req.url,
+        });
+      } else {
+        // Если заголовки уже отправлены — обрываем соединение
+        res.destroy();
+      }
     }, timeout);
 
     // Очищаем таймер после завершения запроса
@@ -38,7 +43,7 @@ export class RequestTimeoutMiddleware implements NestMiddleware {
     res.on('finish', () => clearTimeout(timer));
 
     next();
-  }
+  };
 
   /**
    * Можно задать per-route timeout через res.locals
