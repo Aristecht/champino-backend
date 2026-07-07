@@ -1,26 +1,30 @@
 import { ConfigService } from '@nestjs/config';
 import { ThrottlerModuleOptions } from '@nestjs/throttler';
 
+import { isDev } from '../../shared/utils/is-dev.util';
 import { RedisThrottlerStorage } from '../redis/redis-throttler.storage';
 
 export function getThrottlerConfig(
   configService: ConfigService,
 ): ThrottlerModuleOptions {
+  const dev = isDev(configService);
+
+  // В dev режиме лимиты выше, чтобы не мешать разработке
   const throttlers = [
     {
       name: 'default',
       ttl: 60 * 1000, // 1 минута
-      limit: 60, // 60 запросов в минуту — общий лимит на GraphQL
+      limit: dev ? 600 : 200, // dev: 600/мин, prod: 200/мин
     },
     {
       name: 'auth',
       ttl: 15 * 60 * 1000, // 15 минут
-      limit: 10, // 10 попыток
+      limit: dev ? 50 : 10, // dev: 50, prod: 10
     },
     {
       name: 'strict',
       ttl: 60 * 60 * 1000, // 1 час
-      limit: 3,
+      limit: dev ? 20 : 3,
     },
   ];
 

@@ -1,4 +1,3 @@
-import { APP_GUARD } from '@nestjs/core';
 import { Module } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from './prisma/prisma.module';
@@ -34,8 +33,6 @@ import { BranchModule } from '../modules/content/branch/branch.module';
 import { AnalyticsModule } from '../modules/content/analytics/analytics.module';
 import { NewsModule } from '../modules/content/news/news.module';
 import { LoyaltyModule } from '../modules/loyalty/loyalty.module';
-
-import { GqlThrottlerGuard } from '../shared/guards/gql-throttler.guard';
 
 @Module({
   imports: [
@@ -80,12 +77,6 @@ import { GqlThrottlerGuard } from '../shared/guards/gql-throttler.guard';
     AnalyticsModule,
     NewsModule,
     LoyaltyModule,
-  ],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: GqlThrottlerGuard,
-    },
   ],
 })
 export class CoreModule {}
