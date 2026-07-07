@@ -133,11 +133,8 @@ export function getGraphQLConfig(
     autoSchemaFile: join(process.cwd(), 'src/core/graphql/schema.gql'),
     sortSchema: true,
     context: ({ req, res }) => ({ req, res }),
-    // В production: отключаем introspection + лимитируем глубину запроса (max 6 уровней)
-    ...(dev
-      ? {}
-      : {
-          validationRules: [depthLimitValidator(6)],
-        }),
+    // В production: отключаем introspection
+    // validationRules временно отключены для диагностики 502
+    ...(dev ? {} : {}),
   };
 }
