@@ -18,7 +18,27 @@ export class GlobalExceptionFilter implements GqlExceptionFilter {
 
     // Если это HTTP-запрос (REST), передаём ошибку NestJS-обработчику
     if (contextType === 'http') {
-      throw exception;
+      // НЕ делаем throw — это может привести к 502 (incomplete response).
+      // Вместо этого корректно обрабатываем ошибку через NestJS.
+      if (exception instanceof HttpException) {
+        return this.handleHttpException(exception, host);
+      }
+
+      // Для неизвестных ошибок в HTTP контексте — логируем и возвращаем 500
+      this.logger.error(
+        'Unhandled HTTP error:',
+        exception instanceof Error ? exception.stack : exception,
+      );
+
+      const res = host.switchToHttp().getResponse();
+      if (!res.writableEnded) {
+        res.status(500).json({
+          statusCode: 500,
+          message: 'Внутренняя ошибка сервера',
+          timestamp: new Date().toISOString(),
+        });
+      }
+      return;
     }
 
     // GraphQL контекст
@@ -64,5 +84,25 @@ export class GlobalExceptionFilter implements GqlExceptionFilter {
         httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
       },
     });
+  }
+
+  private handleHttpException(exception: HttpException, host: ArgumentsHost) {
+    const status = exception.getStatus();
+    const response = exception.getResponse();
+
+    this.logger.warn(`HTTP ${status}: ${JSON.stringify(response)}`);
+
+    const res = host.switchToHttp().getResponse();
+    if (!res.writableEnded) {
+      res.status(status).json(
+        typeof response === 'object' && response !== null
+          ? response
+          : {
+              statusCode: status,
+              message: exception.message,
+              timestamp: new Date().toISOString(),
+            },
+      );
+    }
   }
 }

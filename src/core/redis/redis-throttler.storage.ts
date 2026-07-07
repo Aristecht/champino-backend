@@ -6,6 +6,9 @@ import { createClient, RedisClientType } from 'redis';
  * При падении Redis — падает "degraded": лимиты продолжают работать in-memory
  * через fallback (throw, но ThrottlerGuard ловит и пропускает запрос).
  * Для production рекомендуется всегда иметь Redis.
+ *
+ * Все операции с Redis имеют таймаут 3 секунды, чтобы избежать "висящих"
+ * запросов при проблемах с Redis.
  */
 export class RedisThrottlerStorage implements ThrottlerStorage {
   private client: RedisClientType;
@@ -54,13 +57,38 @@ export class RedisThrottlerStorage implements ThrottlerStorage {
   }> {
     if (this.connected) {
       try {
-        return await this.incrementRedis(key, ttl, limit, blockDuration, name);
+        return await this.withTimeout(
+          this.incrementRedis(key, ttl, limit, blockDuration, name),
+          3_000,
+        );
       } catch {
         this.connected = false;
       }
     }
 
     return this.incrementFallback(key, ttl, limit, blockDuration, name);
+  }
+
+  /**
+   * Выполняет Promise с таймаутом.
+   * Если Redis завис — не ждём больше указанного времени.
+   */
+  private async withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const timer = setTimeout(() => {
+        reject(new Error(`Redis operation timed out after ${ms}ms`));
+      }, ms);
+
+      promise
+        .then(result => {
+          clearTimeout(timer);
+          resolve(result);
+        })
+        .catch(err => {
+          clearTimeout(timer);
+          reject(err);
+        });
+    });
   }
 
   private async incrementRedis(

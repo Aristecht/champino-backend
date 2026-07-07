@@ -9,6 +9,7 @@ import passport from 'passport';
 import { CoreModule } from './core/core.module';
 import { RedisService } from './core/redis/redis.service';
 import { GlobalExceptionFilter } from './shared/filters/global-exception.filter';
+import { RequestTimeoutMiddleware } from './shared/middlewares/request-timeout.middleware';
 import { ms } from './shared/utils/ms.util';
 import { parseBoolean } from './shared/utils/parse-boolean.util';
 
@@ -60,6 +61,9 @@ async function bootstrap() {
       store: new RedisStore({
         client: redis.client,
         prefix: config.getOrThrow<string>('SESSION_FOLDER'),
+        // Таймаут на операции с Redis: 5s (connect-redis использует
+        // команду PING перед операциями, если подключение проблемное)
+        disableTTL: false,
       }),
     }),
   );
@@ -70,6 +74,9 @@ async function bootstrap() {
     credentials: true,
     exposedHeaders: ['Set-Cookie'],
   });
+
+  // Глобальный таймаут запросов (25s) — ДО health check и GraphQL
+  app.use(new RequestTimeoutMiddleware().use);
 
   // Health check endpoint
   const httpAdapter = app.getHttpAdapter();
