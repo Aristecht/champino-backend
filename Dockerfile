@@ -13,8 +13,7 @@ FROM base AS deps
 
 COPY package.json package-lock.json ./
 
-RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
-    npm ci --include=dev --legacy-peer-deps
+RUN npm ci --include=dev --legacy-peer-deps
 
 FROM deps AS build
 
