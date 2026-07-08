@@ -23,6 +23,96 @@ services:
       - redis_data:/data
     networks:
       - champino-shop-backend
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - db
+      - redis
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - APPLICATION_PORT=4000
+      - POSTGRES_URI=${POSTGRES_URI}
+      - REDIS_URI=${REDIS_URI}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - SESSION_NAME=${SESSION_NAME}
+      - SESSION_FOLDER=${SESSION_FOLDER}
+      - SESSION_MAX_AGE=${SESSION_MAX_AGE}
+      - SESSION_HTTP_ONLY=${SESSION_HTTP_ONLY}
+      - SESSION_SECURE=${SESSION_SECURE}
+      - SESSION_DOMAIN=${SESSION_DOMAIN}
+      - COOKIE_SECRET=${COOKIE_SECRET}
+      - ALLOWED_ORIGIN=${ALLOWED_ORIGIN}
+      - APPLICATION_URL=${APPLICATION_URL}
+      - API_PREFIX=${API_PREFIX}
+      - GRAPHQL_PREFIX=${GRAPHQL_PREFIX}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL}
+      - S3_ENDPOINT=${S3_ENDPOINT}
+      - S3_REGION=${S3_REGION}
+      - S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID}
+      - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM=${MAIL_FROM}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+      - KASPI_API_KEY=${KASPI_API_KEY}
+      - KASPI_MERCHANT_ID=${KASPI_MERCHANT_ID}
+      - KASPI_WALLET_ID=${KASPI_WALLET_ID}
+      - HALYK_TERMINAL_ID=${HALYK_TERMINAL_ID}
+      - HALYK_MERCHANT_ID=${HALYK_MERCHANT_ID}
+      - HALYK_SECRET_KEY=${HALYK_SECRET_KEY}
+      - ROSTA_API_URL=${ROSTA_API_URL}
+      - ROSTA_API_KEY=${ROSTA_API_KEY}
+      - ROSTA_SYNC_INTERVAL=${ROSTA_SYNC_INTERVAL}
+      - ROSTA_LOYALTY_API_KEY=${ROSTA_LOYALTY_API_KEY}
+      - ROSTA_SYNC_GROUP=${ROSTA_SYNC_GROUP}
+      - PAYMENT_SUCCESS_URL=${PAYMENT_SUCCESS_URL}
+      - PAYMENT_FAILURE_URL=${PAYMENT_FAILURE_URL}
+    expose:
+      - 4000
+    labels:
+      # ════════════════════════════════════════════
+      # ОБЯЗАТЕЛЬНО: включаем Traefik для этого контейнера
+      # Traefik имеет exposedByDefault: false —
+      # без этого label он не увидит контейнер
+      # ════════════════════════════════════════════
+      - traefik.enable=true
+
+      # HTTP роутер (редирект на HTTPS)
+      - traefik.http.routers.backend-http.rule=Host(`champino.org`) && PathPrefix(`/api`)
+      - traefik.http.routers.backend-http.entrypoints=web
+      - traefik.http.routers.backend-http.middlewares=https-redirect
+
+      # HTTPS роутер
+      - traefik.http.routers.backend.rule=Host(`champino.org`) && PathPrefix(`/api`)
+      - traefik.http.routers.backend.entrypoints=websecure
+      - traefik.http.routers.backend.tls=true
+      - traefik.http.routers.backend.tls.certresolver=letsencrypt
+
+      # Сервис — куда направлять трафик (порт 4000)
+      - traefik.http.services.backend.loadbalancer.server.port=4000
+
+      # Сеть Traefik (должна совпадать с network в providers.docker)
+      - traefik.docker.network=dokploy-network
+
+      # Middleware для редиректа HTTP → HTTPS
+      - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
+    networks:
+      - champino-shop-backend
+      - dokploy-network
       
 volumes:
   postgres_data:
@@ -30,3 +120,6 @@ volumes:
 
 networks:
   champino-shop-backend:
+  dokploy-network:
+    external: true
+    name: dokploy-network
